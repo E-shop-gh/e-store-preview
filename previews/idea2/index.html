@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APPI - Reliable Water Supply Solutions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+        }
+
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+                        url('images/hero.png') center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+
+        .cta-button {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .usage-section {
+            padding: 50px 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .usage-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .usage-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .usage-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .usage-content {
+            padding: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            position: relative;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="hero">
+        <div class="hero-content">
+            <h1 style="color: #E7FF00">APPI Water Supply Service</h1>
+            <p>24/7 Reliable Water Supply for Homes, Industries & Construction Sites</p>
+            <button class="cta-button" onclick="showModal()" style="margin: 10px">Order Now</button>
+        </div>
+    </section>
+
+    <section class="usage-section">
+        <div class="usage-card">
+            <div class="usage-image" style="background-image: url('images/add1.jpg')"></div>
+            <div class="usage-content">
+                <h3>Domestic Use</h3>
+                <p>Safe drinking water for homes, apartments, and residential complexes</p>
+            </div>
+        </div>
+
+        <div class="usage-card">
+            <div class="usage-image" style="background-image: url('images/add2.jpg')"></div>
+            <div class="usage-content">
+                <h3>Industrial Supply</h3>
+                <p>High-volume water solutions for manufacturing and processing plants</p>
+            </div>
+        </div>
+
+        <div class="usage-card">
+            <div class="usage-image" style="background-image: url('images/add3.jpg')"></div>
+            <div class="usage-content">
+                <h3>Construction Needs</h3>
+                <p>Bulk water supply for concrete mixing and site preparation</p>
+            </div>
+        </div>
+        
+        <div class="usage-card">
+            <div class="usage-image" style="background-image: url('images/add4.png')"></div>
+            <div class="usage-content">
+                <h3>Emergency Supply</h3>
+                <p>Rapid response water delivery for critical situations</p>
+            </div>
+        </div>
+    </section>
+
+    <div id="contactModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="hideModal()">&times;</span>
+            <h2>Contact Us</h2>
+            <p>24/7 Service Available</p>
+            <div style="margin: 20px 0;">
+                <p>📞 Call: +1 (555) 123-4567</p>
+                <p>📧 Email: contact@aquaflow.com</p>
+                <p>📍 Office: 123 Water Street, Riverside</p>
+            </div>
+            <button class="cta-button" onclick="hideModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function showModal() {
+            document.getElementById('contactModal').style.display = 'flex';
+        }
+
+        function hideModal() {
+            document.getElementById('contactModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('contactModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -3,190 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APPI - Reliable Water Supply Solutions</title>
+    <title>Phonics Lessons</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background-color: #f5f7fa;
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 2rem;
         }
 
-        .hero {
-            height: 100vh;
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
-                        url('images/hero.png') center/cover;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: white;
-            padding: 20px;
-        }
-
-        .hero-content h1 {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-        }
-
-        .cta-button {
-            padding: 15px 40px;
-            font-size: 1.2rem;
-            background-color: #2196F3;
-            color: white;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-
-        .usage-section {
-            padding: 50px 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+        .container {
             max-width: 1200px;
             margin: 0 auto;
         }
 
-        .usage-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-
-        .usage-card:hover {
-            transform: translateY(-10px);
-        }
-
-        .usage-image {
-            height: 200px;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .usage-content {
-            padding: 20px;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
+        h1 {
             text-align: center;
-            position: relative;
+            color: #1a73e8;
+            margin-bottom: 3rem;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
 
-        .close-button {
-            position: absolute;
-            top: 15px;
-            right: 15px;
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
+        }
+
+        .lesson-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
             cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+            text-align: left;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .lesson-card:active {
+            transform: translateY(0);
+            background: #f8f9fa;
+        }
+
+        .lesson-number {
+            color: #1a73e8;
             font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .lesson-desc {
+            color: #5f6368;
+            font-size: 1rem;
+            line-height: 1.4;
         }
 
         @media (max-width: 768px) {
-            .hero-content h1 {
-                font-size: 2.5rem;
+            body {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 2rem;
+            }
+
+            .lessons-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .lesson-card {
+                padding: 1rem;
+            }
+
+            .lesson-number {
+                font-size: 1.3rem;
+            }
+
+            .lesson-desc {
+                font-size: 0.9rem;
             }
         }
     </style>
 </head>
 <body>
-    <section class="hero">
-        <div class="hero-content">
-            <h1 style="color: #E7FF00">APPI Water Supply Service</h1>
-            <p>24/7 Reliable Water Supply for Homes, Industries & Construction Sites</p>
-            <button class="cta-button" onclick="showModal()" style="margin: 10px">Order Now</button>
-        </div>
-    </section>
-
-    <section class="usage-section">
-        <div class="usage-card">
-            <div class="usage-image" style="background-image: url('images/add1.jpg')"></div>
-            <div class="usage-content">
-                <h3>Domestic Use</h3>
-                <p>Safe drinking water for homes, apartments, and residential complexes</p>
-            </div>
-        </div>
-
-        <div class="usage-card">
-            <div class="usage-image" style="background-image: url('images/add2.jpg')"></div>
-            <div class="usage-content">
-                <h3>Industrial Supply</h3>
-                <p>High-volume water solutions for manufacturing and processing plants</p>
-            </div>
-        </div>
-
-        <div class="usage-card">
-            <div class="usage-image" style="background-image: url('images/add3.jpg')"></div>
-            <div class="usage-content">
-                <h3>Construction Needs</h3>
-                <p>Bulk water supply for concrete mixing and site preparation</p>
-            </div>
-        </div>
-        
-        <div class="usage-card">
-            <div class="usage-image" style="background-image: url('images/add4.png')"></div>
-            <div class="usage-content">
-                <h3>Emergency Supply</h3>
-                <p>Rapid response water delivery for critical situations</p>
-            </div>
-        </div>
-    </section>
-
-    <div id="contactModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="hideModal()">&times;</span>
-            <h2>Contact Us</h2>
-            <p>24/7 Service Available</p>
-            <div style="margin: 20px 0;">
-                <p>📞 Call: +1 (555) 123-4567</p>
-                <p>📧 Email: contact@aquaflow.com</p>
-                <p>📍 Office: 123 Water Street, Riverside</p>
-            </div>
-            <button class="cta-button" onclick="hideModal()">Close</button>
+    <div class="container">
+        <h1>Catalogue</h1>
+        <div class="lessons-grid">
+            <!-- Lesson cards will be added here -->
         </div>
     </div>
 
     <script>
-        function showModal() {
-            document.getElementById('contactModal').style.display = 'flex';
-        }
+        // Lesson data
+        const lessons = [
+            { number: 1, desc: "Project 1", url: "previews/idea1/index.html" },
+            { number: 2, desc: "Water Supply Ad 1", url: "previews/idea2/index.html" },
+            { number: 3, desc: "Beauty", url: "previews/idea3/index.html" },
+            { number: 4, desc: "Pretty", url: "previews/idea4/index.html" },
+        ];
 
-        function hideModal() {
-            document.getElementById('contactModal').style.display = 'none';
-        }
+        // Generate lesson cards
+        const grid = document.querySelector('.lessons-grid');
+        
+        lessons.forEach(lesson => {
+            const card = document.createElement('button');
+            card.className = 'lesson-card';
+            card.innerHTML = `
+                <div class="lesson-number">Project ${lesson.number}</div>
+                <div class="lesson-desc">${lesson.desc}</div>
+            `;
+            
+            card.addEventListener('click', () => {
+                window.location.href = lesson.url;
+                // For actual implementation, replace with proper navigation
+                // alert(`Navigating to ${lesson.desc}`);
+            });
 
-        window.onclick = function(event) {
-            const modal = document.getElementById('contactModal');
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        }
+            grid.appendChild(card);
+        });
+
+        // Add hover effect for touch devices
+        document.addEventListener('touchstart', function() {}, true);
     </script>
 </body>
 </html>
