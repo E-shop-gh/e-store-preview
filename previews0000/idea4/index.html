@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodHub - Modern Food Ordering</title>
+    <meta name="description" content="Order delicious meals online from FoodHub. Best burgers, pizza, and sushi in town. Fast delivery and great prices!">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #ff6b6b;
+            --secondary: #4ecdc4;
+            --dark: #2d3436;
+            --light: #f9f9f9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--light);
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .cart-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://source.unsplash.com/random/1200x800?food');
+            background-size: cover;
+            color: white;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .filters input, .filters select {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .price {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin: 1rem 0;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            width: 100%;
+        }
+
+        .cart-panel {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100%;
+            background: white;
+            box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+            padding: 2rem;
+            transition: right 0.3s ease;
+        }
+
+        .cart-panel.active {
+            right: 0;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 1rem 0;
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        form input, form textarea {
+            width: 100%;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        footer {
+            background: var(--dark);
+            color: white;
+            margin-top: 4rem;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .cart-panel {
+                width: 100%;
+                right: -100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🍔 FoodHub</h1>
+            <div class="cart-icon" onclick="toggleCart()">
+                🛒 <span id="cart-count">0</span>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h2>Delicious Meals Delivered To You</h2>
+            <p>Order from our premium menu selection</p>
+        </div>
+    </section>
+
+    <main class="container">
+        <div class="filters">
+            <input type="text" placeholder="Search dishes..." id="searchInput" onkeyup="filterMenu()">
+            <select id="categoryFilter" onchange="filterMenu()">
+                <option value="all">All Categories</option>
+                <option value="burger">Burgers</option>
+                <option value="pizza">Pizza</option>
+                <option value="sushi">Sushi</option>
+            </select>
+        </div>
+
+        <div class="menu-grid" id="menuGrid"></div>
+    </main>
+
+    <!-- Cart Panel -->
+    <div class="cart-panel" id="cartPanel">
+        <h3>Your Order</h3>
+        <div id="cart-items"></div>
+        <div class="cart-total">
+            Total: $<span id="cart-total">0.00</span>
+        </div>
+        <button class="btn" onclick="showCheckout()">Proceed to Checkout</button>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="modal" id="checkoutModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Checkout Details</h2>
+            <form id="checkoutForm" onsubmit="handleSubmit(event)">
+                <input type="text" placeholder="Full Name" required>
+                <input type="tel" placeholder="Phone Number" required>
+                <textarea placeholder="Delivery Address" required></textarea>
+                <button type="submit" class="btn">Confirm Order</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>© 2023 FoodHub. All rights reserved.</p>
+            <p>📞 (555) 123-4567 | 📍 123 Food Street</p>
+        </div>
+    </footer>
+
+    <script>
+        window.jspdf = window.jspdf.jsPDF;
+
+        // Menu Data
+        const menuItems = [
+            {
+                id: 1,
+                name: "Premium Burger",
+                price: 12.99,
+                category: "burger",
+                image: "https://source.unsplash.com/random/400x300?burger"
+            },
+            {
+                id: 2,
+                name: "Margherita Pizza",
+                price: 15.99,
+                category: "pizza",
+                image: "https://source.unsplash.com/random/400x300?pizza"
+            },
+            {
+                id: 3,
+                name: "Sushi Platter",
+                price: 18.99,
+                category: "sushi",
+                image: "https://source.unsplash.com/random/400x300?sushi"
+            }
+        ];
+
+        let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadMenu();
+            updateCartCount();
+        });
+
+        // Menu Loading
+        function loadMenu() {
+            const grid = document.getElementById('menuGrid');
+            grid.innerHTML = menuItems.map(item => `
+                <div class="card">
+                    <img src="${item.image}" alt="${item.name}">
+                    <div class="card-content">
+                        <h3>${item.name}</h3>
+                        <div class="price">$${item.price.toFixed(2)}</div>
+                        <button class="btn" onclick="addToCart(${item.id})">Add to Cart</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Cart Functions
+        function addToCart(itemId) {
+            const item = menuItems.find(i => i.id === itemId);
+            const existing = cartItems.find(i => i.id === itemId);
+            
+            if(existing) {
+                existing.quantity++;
+            } else {
+                cartItems.push({...item, quantity: 1});
+            }
+            
+            updateCart();
+            saveCart();
+        }
+
+        function updateCart() {
+            const cartItemsElement = document.getElementById('cart-items');
+            const cartTotalElement = document.getElementById('cart-total');
+            
+            cartItemsElement.innerHTML = cartItems.map(item => `
+                <div class="cart-item">
+                    <div>${item.name} x${item.quantity}</div>
+                    <div>$${(item.price * item.quantity).toFixed(2)}</div>
+                </div>
+            `).join('');
+            
+            const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            cartTotalElement.textContent = total.toFixed(2);
+            updateCartCount();
+        }
+
+        function updateCartCount() {
+            document.getElementById('cart-count').textContent = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+        }
+
+        function saveCart() {
+            localStorage.setItem('cart', JSON.stringify(cartItems));
+        }
+
+        // Search/Filter
+        function filterMenu() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const category = document.getElementById('categoryFilter').value;
+            
+            const filtered = menuItems.filter(item => 
+                item.name.toLowerCase().includes(search) && 
+                (category === 'all' || item.category === category)
+            );
+            
+            loadFilteredMenu(filtered);
+        }
+
+        function loadFilteredMenu(items) {
+            const grid = document.getElementById('menuGrid');
+            grid.innerHTML = items.map(item => `
+                <div class="card">
+                    <img src="${item.image}" alt="${item.name}">
+                    <div class="card-content">
+                        <h3>${item.name}</h3>
+                        <div class="price">$${item.price.toFixed(2)}</div>
+                        <button class="btn" onclick="addToCart(${item.id})">Add to Cart</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // UI Functions
+        function toggleCart() {
+            document.getElementById('cartPanel').classList.toggle('active');
+        }
+
+        function showCheckout() {
+            document.getElementById('checkoutModal').style.display = 'flex';
+            toggleCart();
+        }
+
+        function closeModal() {
+            document.getElementById('checkoutModal').style.display = 'none';
+        }
+
+        // PDF Generation
+        function handleSubmit(e) {
+            e.preventDefault();
+            const form = e.target;
+            
+            const name = form.elements[0].value;
+            const phone = form.elements[1].value;
+            const address = form.elements[2].value;
+
+            // Generate PDF
+            const doc = new jspdf.jsPDF();
+            
+            // Header
+            doc.setFontSize(22);
+            doc.setTextColor(255, 107, 107);
+            doc.text("🍔 FoodHub Order Summary", 15, 20);
+            
+            // Vendor Info
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text("Vendor Contact:", 15, 35);
+            doc.text("📞 (555) 123-4567", 15, 40);
+            doc.text("📧 orders@foodhub.com", 15, 45);
+            doc.text("📍 123 Food Street", 15, 50);
+            
+            // Customer Info
+            doc.text(`Customer Details:`, 15, 65);
+            doc.text(`Name: ${name}`, 15, 70);
+            doc.text(`Phone: ${phone}`, 15, 75);
+            doc.text(`Address: ${address}`, 15, 80);
+            
+            // Order Items
+            doc.text("Order Items:", 15, 95);
+            let yPosition = 100;
+            cartItems.forEach(item => {
+                const line = `${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`;
+                doc.text(line, 15, yPosition);
+                yPosition += 5;
+            });
+            
+            // Total
+            const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            doc.text(`Total: $${total.toFixed(2)}`, 15, yPosition + 10);
+            
+            // WhatsApp Link
+            doc.setTextColor(0, 0, 255);
+            doc.textWithLink('Send via WhatsApp', 15, yPosition + 20, {
+                url: 'https://wa.me/+233545800158'
+            });
+            
+            // Save PDF
+            doc.save(`FoodHub-Order-${Date.now()}.pdf`);
+            
+            // Show confirmation
+            alert('Order PDF downloaded! Please send to vendor via WhatsApp.');
+            
+            // Clear cart
+            cartItems = [];
+            saveCart();
+            updateCart();
+            closeModal();
+            toggleCart();
+        }
+    </script>
+</body>
+</html>
