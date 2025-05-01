@@ -435,8 +435,6 @@
 
 
                 doc.setFont('Helvetica', 'normal');
-                const orderCode = `Order Code: ${Date.now()}`;
-
                 // PDF Content
                 doc.setFontSize(isMobile ? 14 : 18);
                 doc.setTextColor('#ff6b6b');
@@ -509,14 +507,15 @@
                 const vendorNumber = '233545800158'; // Replace with your number
                 const itemsText = cartItems.map(item => 
                     `${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`
-                ).join('%0A');
+                ).join('\n');
+                const orderCode = `Order Code: ${Date.now()}`;
 
                 const message = encodeURIComponent(
                     `📱 New Food Order\n` +
-                    `Order Code: ${orderCode}\n` +
+                    `${orderCode}\n` +
                     `👤 Customer: ${name}\n` +
                     `📞 Phone: ${phone}\n` +
-                    `🏠 Address: ${address}\n` +
+                    `🏠 Address: ${address}\n\n` +
                     `📦 Order Items:${itemsText}\n\n` +
                     `💵 Total: $${cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}`
                 );
