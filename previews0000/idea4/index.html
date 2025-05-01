@@ -518,8 +518,8 @@
                     `👤 Customer: ${name}\n` +
                     `📞 Phone: ${phone}\n` +
                     `🏠 Address: ${address}\n\n` +
-                    `Order Code: ${address}\n` +
-                    `📦 Order Items:${itemsText}\n\n` +
+                    `Order Code: ${orderCode}\n` +
+                    `📦 Order Items:\n${itemsText}\n\n` +
                     `💵 Total: $${cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}`
                 );
 
