@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FoodHub - Modern Food Ordering</title>
     <meta name="description" content="Order delicious meals online from FoodHub. Best burgers, pizza, and sushi in town. Fast delivery and great prices!">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="jspdf.min.js"></script>
+
     <style>
         :root {
             --primary: #ff6b6b;
@@ -385,65 +386,113 @@
         function handleSubmit(e) {
             e.preventDefault();
             const form = e.target;
-            
-            const name = form.elements[0].value;
-            const phone = form.elements[1].value;
-            const address = form.elements[2].value;
 
-            // Generate PDF
-            const doc = new jspdf.jsPDF();
+            //  // Get form values
+            // const name = form.elements[0].value;
+            // const phone = form.elements[1].value;
+            // const address = form.elements[2].value;
             
-            // Header
-            doc.setFontSize(22);
-            doc.setTextColor(255, 107, 107);
-            doc.text("🍔 FoodHub Order Summary", 15, 20);
-            
-            // Vendor Info
-            doc.setFontSize(12);
-            doc.setTextColor(0, 0, 0);
-            doc.text("Vendor Contact:", 15, 35);
-            doc.text("📞 (555) 123-4567", 15, 40);
-            doc.text("📧 orders@foodhub.com", 15, 45);
-            doc.text("📍 123 Food Street", 15, 50);
-            
-            // Customer Info
-            doc.text(`Customer Details:`, 15, 65);
-            doc.text(`Name: ${name}`, 15, 70);
-            doc.text(`Phone: ${phone}`, 15, 75);
-            doc.text(`Address: ${address}`, 15, 80);
-            
-            // Order Items
-            doc.text("Order Items:", 15, 95);
-            let yPosition = 100;
-            cartItems.forEach(item => {
-                const line = `${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`;
-                doc.text(line, 15, yPosition);
-                yPosition += 5;
-            });
-            
-            // Total
+            // Input sanitization
+            const sanitizeInput = (input) => input.replace(/[<>]/g, '');
+            const name = sanitizeInput(form.elements[0].value);
+            const phone = sanitizeInput(form.elements[1].value);
+            const address = sanitizeInput(form.elements[2].value);
+
+             // Generate order text
+            const itemsText = cartItems.map(item => 
+                `${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`
+            ).join('%0A');
+
             const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            doc.text(`Total: $${total.toFixed(2)}`, 15, yPosition + 10);
-            
-            // WhatsApp Link
-            doc.setTextColor(0, 0, 255);
-            doc.textWithLink('Send via WhatsApp', 15, yPosition + 20, {
-                url: 'https://wa.me/+233545800158'
-            });
-            
-            // Save PDF
-            doc.save(`FoodHub-Order-${Date.now()}.pdf`);
-            
-            // Show confirmation
-            alert('Order PDF downloaded! Please send to vendor via WhatsApp.');
-            
-            // Clear cart
-            cartItems = [];
-            saveCart();
-            updateCart();
-            closeModal();
-            toggleCart();
+        
+            // Create WhatsApp message
+            const message = encodeURIComponent(
+                `📱 New Food Order\n\n` +
+                `👤 Customer: ${name}\n` +
+                `📞 Phone: ${phone}\n` +
+                `🏠 Address: ${address}\n\n` +
+                `📦 Order Items:\n${itemsText}\n\n` +
+                `💵 Total: $${total.toFixed(2)}\n\n` +
+                `Please confirm receipt of this order.`
+            );
+
+            try {
+                const doc = new jsPDF();
+                
+                // Header
+                doc.setFontSize(22);
+                doc.setTextColor('#ff6b6b'); // Hex color
+                doc.text("FoodHub Order Summary", 15, 20);
+                
+                // Vendor Info
+                doc.setFontSize(12);
+                doc.setTextColor('#000000');
+                doc.text("Vendor Contact:", 15, 35);
+                doc.text("Call: (555) 123-4567", 15, 40);
+                doc.text("e-mail: orders@foodhub.com", 15, 45);
+                doc.text("Location: 123 Food Street", 15, 50);
+                
+                // Customer Info
+                doc.text(`Customer Details:`, 15, 65);
+                doc.text(`Name: ${name}`, 15, 70);
+                doc.text(`Phone: ${phone}`, 15, 75);
+                doc.text(`Address: ${address}`, 15, 80);
+                doc.text(`Order Code: ${Date.now()}`, 15, 85);
+                
+                // Order Items
+                doc.text("Order Items:", 15, 100);
+                let yPosition = 105;
+                cartItems.forEach(item => {
+                    const line = `${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`;
+                    doc.text(line, 15, yPosition);
+                    yPosition += 5;
+                });
+                
+                // Total
+                const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                doc.text(`Total: $${total.toFixed(2)}`, 15, yPosition + 10);
+                
+                // WhatsApp Link (modern implementation)
+                doc.setTextColor('#0000ff');
+                doc.text('Send via WhatsApp:', 15, yPosition + 20);
+                doc.link(15, yPosition + 18, 50, 10, {
+                    url: 'https://wa.me/+233545800158'
+                });
+                
+                // Save PDF
+                doc.save(`FoodHub-Order-${Date.now()}.pdf`);
+                
+                // Show confirmation
+                alert('Order PDF downloaded! Please send to vendor via WhatsApp.');
+
+
+                 // Auto-open WhatsApp with pre-filled message
+                const whatsappUrl = `https://wa.me/233545800158?text=${message}`;
+                
+                // Mobile-friendly implementation
+                if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                    // For mobile devices
+                    window.location.href = whatsappUrl;
+                } else {
+                    // For desktop browsers
+                    window.open(whatsappUrl, '_blank');
+                }
+                
+                // Clear cart
+                cartItems = [];
+                saveCart();
+                updateCart();
+                closeModal();
+                toggleCart();
+                
+            } catch (error) {
+                console.error('PDF Generation Error:', error);
+                alert('Failed to generate PDF. Please check the console for details.');
+            }
         }
     </script>
 </body>
 </html>
+
+
+
