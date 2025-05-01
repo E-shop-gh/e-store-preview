@@ -2,11 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>FoodHub - Modern Food Ordering</title>
-    <meta name="description" content="Order delicious meals online from FoodHub. Best burgers, pizza, and sushi in town. Fast delivery and great prices!">
-    <script src="jspdf.min.js"></script>
-
+    <meta name="description" content="Order delicious meals online from FoodHub">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --primary: #ff6b6b;
@@ -15,29 +14,47 @@
             --light: #f9f9f9;
         }
 
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             background: var(--light);
             color: var(--dark);
+            line-height: 1.6;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 15px;
         }
 
         header {
             background: var(--primary);
             color: white;
             padding: 1rem;
-            position: relative;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
@@ -47,9 +64,17 @@
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
-            padding: 10px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 5px;
+            padding: 10px 15px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s;
+        }
+
+        .cart-icon:hover {
+            background: rgba(255,255,255,0.25);
         }
 
         .hero {
@@ -57,6 +82,7 @@
             padding: 4rem 0;
             background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://source.unsplash.com/random/1200x800?food');
             background-size: cover;
+            background-position: center;
             color: white;
         }
 
@@ -68,46 +94,51 @@
         }
 
         .filters input, .filters select {
-            padding: 0.8rem;
+            padding: 0.8rem 1.2rem;
             border: 1px solid #ddd;
-            border-radius: 25px;
+            border-radius: 30px;
             flex: 1;
             min-width: 250px;
+            font-size: 1rem;
+            background: white;
         }
 
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            padding: 2rem 0;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            padding: 1.5rem 0;
         }
 
         .card {
             background: white;
-            border-radius: 10px;
+            border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
         }
 
         .card img {
             width: 100%;
             height: 200px;
             object-fit: cover;
+            border-bottom: 2px solid var(--primary);
         }
 
         .card-content {
-            padding: 1.5rem;
+            padding: 1.2rem;
         }
 
         .price {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             color: var(--primary);
-            margin: 1rem 0;
+            margin: 0.8rem 0;
+            font-weight: 700;
         }
 
         .btn {
@@ -115,22 +146,30 @@
             color: white;
             border: none;
             padding: 0.8rem 1.5rem;
-            border-radius: 25px;
+            border-radius: 30px;
             cursor: pointer;
-            transition: background 0.3s ease;
+            transition: background 0.3s ease, transform 0.2s ease;
             width: 100%;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
         }
 
         .cart-panel {
             position: fixed;
             right: -400px;
             top: 0;
-            width: 400px;
+            width: 100%;
+            max-width: 400px;
             height: 100%;
             background: white;
             box-shadow: -2px 0 5px rgba(0,0,0,0.1);
-            padding: 2rem;
+            padding: 1.5rem;
             transition: right 0.3s ease;
+            overflow-y: auto;
         }
 
         .cart-panel.active {
@@ -155,14 +194,16 @@
             background: rgba(0,0,0,0.5);
             justify-content: center;
             align-items: center;
+            z-index: 2000;
         }
 
         .modal-content {
             background: white;
             padding: 2rem;
-            border-radius: 10px;
+            border-radius: 15px;
             max-width: 500px;
-            width: 90%;
+            width: 95%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
 
         form input, form textarea {
@@ -170,7 +211,8 @@
             padding: 0.8rem;
             margin: 0.5rem 0;
             border: 1px solid #ddd;
-            border-radius: 5px;
+            border-radius: 10px;
+            font-size: 1rem;
         }
 
         footer {
@@ -182,9 +224,25 @@
         }
 
         @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .hero {
+                padding: 2.5rem 0;
+            }
+            
+            .filters input, .filters select {
+                min-width: 100%;
+            }
+            
             .cart-panel {
-                width: 100%;
+                max-width: 100%;
                 right: -100%;
+            }
+            
+            .card {
+                border-radius: 12px;
             }
         }
     </style>
@@ -238,7 +296,7 @@
             <form id="checkoutForm" onsubmit="handleSubmit(event)">
                 <input type="text" placeholder="Full Name" required>
                 <input type="tel" placeholder="Phone Number" required>
-                <textarea placeholder="Delivery Address" required></textarea>
+                <textarea placeholder="Delivery Address" required rows="4"></textarea>
                 <button type="submit" class="btn">Confirm Order</button>
             </form>
         </div>
@@ -252,45 +310,28 @@
     </footer>
 
     <script>
-        window.jspdf = window.jspdf.jsPDF;
-
-        // Menu Data
-        const menuItems = [
-            {
-                id: 1,
-                name: "Premium Burger",
-                price: 12.99,
-                category: "burger",
-                image: "https://source.unsplash.com/random/400x300?burger"
-            },
-            {
-                id: 2,
-                name: "Margherita Pizza",
-                price: 15.99,
-                category: "pizza",
-                image: "https://source.unsplash.com/random/400x300?pizza"
-            },
-            {
-                id: 3,
-                name: "Sushi Platter",
-                price: 18.99,
-                category: "sushi",
-                image: "https://source.unsplash.com/random/400x300?sushi"
-            }
-        ];
-
+        const { jsPDF } = window.jspdf;
         let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             loadMenu();
             updateCartCount();
+            addTouchEvents();
         });
 
-        // Menu Loading
-        function loadMenu() {
+        // Menu Data
+        const menuItems = [
+            { id: 1, name: "Premium Burger", price: 12.99, category: "burger", image: "https://source.unsplash.com/random/400x300?burger" },
+            { id: 2, name: "Margherita Pizza", price: 15.99, category: "pizza", image: "https://source.unsplash.com/random/400x300?pizza" },
+            { id: 3, name: "Sushi Platter", price: 18.99, category: "sushi", image: "https://source.unsplash.com/random/400x300?sushi" }
+        ];
+
+        // Core Functions
+        function loadMenu(filteredItems = menuItems) {
             const grid = document.getElementById('menuGrid');
-            grid.innerHTML = menuItems.map(item => `
+            grid.innerHTML = filteredItems.map(item => `
                 <div class="card">
                     <img src="${item.image}" alt="${item.name}">
                     <div class="card-content">
@@ -302,17 +343,11 @@
             `).join('');
         }
 
-        // Cart Functions
         function addToCart(itemId) {
             const item = menuItems.find(i => i.id === itemId);
             const existing = cartItems.find(i => i.id === itemId);
             
-            if(existing) {
-                existing.quantity++;
-            } else {
-                cartItems.push({...item, quantity: 1});
-            }
-            
+            existing ? existing.quantity++ : cartItems.push({...item, quantity: 1});
             updateCart();
             saveCart();
         }
@@ -345,27 +380,11 @@
         function filterMenu() {
             const search = document.getElementById('searchInput').value.toLowerCase();
             const category = document.getElementById('categoryFilter').value;
-            
             const filtered = menuItems.filter(item => 
                 item.name.toLowerCase().includes(search) && 
                 (category === 'all' || item.category === category)
             );
-            
-            loadFilteredMenu(filtered);
-        }
-
-        function loadFilteredMenu(items) {
-            const grid = document.getElementById('menuGrid');
-            grid.innerHTML = items.map(item => `
-                <div class="card">
-                    <img src="${item.image}" alt="${item.name}">
-                    <div class="card-content">
-                        <h3>${item.name}</h3>
-                        <div class="price">$${item.price.toFixed(2)}</div>
-                        <button class="btn" onclick="addToCart(${item.id})">Add to Cart</button>
-                    </div>
-                </div>
-            `).join('');
+            loadMenu(filtered);
         }
 
         // UI Functions
@@ -382,117 +401,148 @@
             document.getElementById('checkoutModal').style.display = 'none';
         }
 
-        // PDF Generation
-        function handleSubmit(e) {
+        // Mobile Enhancements
+        function addTouchEvents() {
+            document.querySelectorAll('.btn').forEach(btn => {
+                btn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    btn.click();
+                }, { passive: true });
+            });
+        }
+
+        // PDF Generation with Mobile Support
+        async function handleSubmit(e) {
             e.preventDefault();
             const form = e.target;
-
-            //  // Get form values
-            // const name = form.elements[0].value;
-            // const phone = form.elements[1].value;
-            // const address = form.elements[2].value;
+            const submitBtn = form.querySelector('button[type="submit"]');
             
-            // Input sanitization
-            const sanitizeInput = (input) => input.replace(/[<>]/g, '');
-            const name = sanitizeInput(form.elements[0].value);
-            const phone = sanitizeInput(form.elements[1].value);
-            const address = sanitizeInput(form.elements[2].value);
-
-             // Generate order text
-            const itemsText = cartItems.map(item => 
-                `${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`
-            ).join('%0A');
-
-            const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        
-            // Create WhatsApp message
-            const message = encodeURIComponent(
-                `📱 New Food Order\n\n` +
-                `👤 Customer: ${name}\n` +
-                `📞 Phone: ${phone}\n` +
-                `🏠 Address: ${address}\n\n` +
-                `📦 Order Items:\n${itemsText}\n\n` +
-                `💵 Total: $${total.toFixed(2)}\n\n` +
-                `Please confirm receipt of this order.`
-            );
-
             try {
-                const doc = new jsPDF();
-                
-                // Header
-                doc.setFontSize(22);
-                doc.setTextColor('#ff6b6b'); // Hex color
-                doc.text("FoodHub Order Summary", 15, 20);
-                
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<div class="loader"></div> Processing...';
+
+                const name = sanitizeInput(form.elements[0].value);
+                const phone = sanitizeInput(form.elements[1].value);
+                const address = sanitizeInput(form.elements[2].value);
+
+                // Generate PDF
+                const doc = new jsPDF({
+                    orientation: isMobile ? 'portrait' : 'landscape',
+                    unit: 'mm',
+                    format: isMobile ? 'a5' : 'a4',
+                    compress: true
+                });
+
+                // PDF Content
+                doc.setFontSize(isMobile ? 14 : 18);
+                doc.setTextColor('#ff6b6b');
+                doc.text("FoodHub Order Summary", 15, 15);
+
                 // Vendor Info
-                doc.setFontSize(12);
+                doc.setFontSize(10);
                 doc.setTextColor('#000000');
-                doc.text("Vendor Contact:", 15, 35);
-                doc.text("Call: (555) 123-4567", 15, 40);
-                doc.text("e-mail: orders@foodhub.com", 15, 45);
-                doc.text("Location: 123 Food Street", 15, 50);
-                
+                doc.text("Vendor Contact:", 15, 25);
+                doc.text("Call: (555) 123-4567", 15, 30);
+                doc.text("e-mail orders@foodhub.com", 15, 35);
+                doc.text("Address: 123 Food Street", 15, 40);
+
                 // Customer Info
-                doc.text(`Customer Details:`, 15, 65);
-                doc.text(`Name: ${name}`, 15, 70);
-                doc.text(`Phone: ${phone}`, 15, 75);
-                doc.text(`Address: ${address}`, 15, 80);
-                doc.text(`Order Code: ${Date.now()}`, 15, 85);
-                
+                doc.text(`Customer Details:`, 15, 55);
+                doc.text(`Name: ${name}`, 15, 60);
+                doc.text(`Phone: ${phone}`, 15, 65);
+                doc.text(`Address: ${address}`, 15, 70);
+                doc.text(`Order Code: ${Date.now()}`, 15, 75);
+
                 // Order Items
-                doc.text("Order Items:", 15, 100);
-                let yPosition = 105;
+                doc.text("Order Items:", 15, 90);
+                let yPosition = 95;
                 cartItems.forEach(item => {
-                    const line = `${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`;
-                    doc.text(line, 15, yPosition);
-                    yPosition += 5;
+                    doc.text(`${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`, 15, yPosition);
+                    yPosition += 7;
                 });
-                
+
                 // Total
-                const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                doc.text(`Total: $${total.toFixed(2)}`, 15, yPosition + 10);
-                
-                // WhatsApp Link (modern implementation)
-                doc.setTextColor('#0000ff');
-                doc.text('Send via WhatsApp:', 15, yPosition + 20);
-                doc.link(15, yPosition + 18, 50, 10, {
-                    url: 'https://wa.me/+233545800158'
-                });
-                
-                // Save PDF
-                doc.save(`FoodHub-Order-${Date.now()}.pdf`);
-                
-                // Show confirmation
-                alert('Order PDF downloaded! Please send to vendor via WhatsApp.');
+                doc.text(`Total: $${cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}`, 15, yPosition + 10);
 
-
-                 // Auto-open WhatsApp with pre-filled message
-                const whatsappUrl = `https://wa.me/233545800158?text=${message}`;
+                // Generate PDF Blob
+                const pdfBlob = doc.output('blob');
+                const pdfUrl = URL.createObjectURL(pdfBlob);
                 
-                // Mobile-friendly implementation
-                if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                    // For mobile devices
-                    window.location.href = whatsappUrl;
+                // Handle PDF Download
+                const link = document.createElement('a');
+                link.href = pdfUrl;
+                link.download = `FoodHub-Order-${Date.now()}.pdf`;
+
+                if(isMobile) {
+                    if (window.showSaveFilePicker) {
+                        // Android Chrome
+                        const handle = await window.showSaveFilePicker({
+                            suggestedName: link.download,
+                            types: [{
+                                description: 'PDF Files',
+                                accept: {'application/pdf': ['.pdf']}
+                            }]
+                        });
+                        const writable = await handle.createWritable();
+                        await writable.write(pdfBlob);
+                        await writable.close();
+                    } else {
+                        // iOS Fallback
+                        link.target = '_blank';
+                        document.body.appendChild(link);
+                        link.click();
+                        setTimeout(() => {
+                            document.body.removeChild(link);
+                            URL.revokeObjectURL(pdfUrl);
+                        }, 100);
+                    }
                 } else {
-                    // For desktop browsers
-                    window.open(whatsappUrl, '_blank');
+                    // Desktop
+                    link.click();
                 }
-                
-                // Clear cart
+
+                // WhatsApp Integration
+                const vendorNumber = '233545800158'; // Replace with your number
+                const itemsText = cartItems.map(item => 
+                    `${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`
+                ).join('%0A');
+
+                const message = encodeURIComponent(
+                    `📱 New Food Order%0A%0A` +
+                    `👤 Customer: ${name}%0A` +
+                    `📞 Phone: ${phone}%0A` +
+                    `🏠 Address: ${address}%0A%0A` +
+                    `📦 Order Items:%0A${itemsText}%0A%0A` +
+                    `💵 Total: $${cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}`
+                );
+
+                const whatsappUrl = `https://wa.me/${vendorNumber}?text=${message}`;
+                window.open(whatsappUrl, isMobile ? '_self' : '_blank');
+
+                // Reset System
                 cartItems = [];
                 saveCart();
                 updateCart();
                 closeModal();
                 toggleCart();
-                
+
             } catch (error) {
-                console.error('PDF Generation Error:', error);
-                alert('Failed to generate PDF. Please check the console for details.');
+                console.error('Order Error:', error);
+                alert('Error processing order. Please try again.');
+            } finally {
+                const submitBtn = document.querySelector('#checkoutForm button[type="submit"]');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Confirm Order';
+                URL.revokeObjectURL(pdfUrl);
             }
+        }
+
+        function sanitizeInput(input) {
+            return input
+                .replace(/[<>]/g, '')
+                .replace(/[^\w\s@.-]/gi, '')
+                .substring(0, 100);
         }
     </script>
 </body>
 </html>
-
-
-
