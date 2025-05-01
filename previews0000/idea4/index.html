@@ -424,6 +424,7 @@
                 const name = sanitizeInput(form.elements[0].value);
                 const phone = sanitizeInput(form.elements[1].value);
                 const address = sanitizeInput(form.elements[2].value);
+                const orderCode = Date.now();
 
                 // Generate PDF
                 const doc = new jsPDF({
@@ -435,6 +436,8 @@
 
 
                 doc.setFont('Helvetica', 'normal');
+
+
                 // PDF Content
                 doc.setFontSize(isMobile ? 14 : 18);
                 doc.setTextColor('#ff6b6b');
@@ -453,7 +456,7 @@
                 doc.text(`Name: ${name}`, 15, 60);
                 doc.text(`Phone: ${phone}`, 15, 65);
                 doc.text(`Address: ${address}`, 15, 70);
-                doc.text(`Order Code: ${orderCode}`, 15, 75);
+                doc.text(`Order Code: ${Date.now()}`, 15, 75);
 
                 // Order Items
                 doc.text("Order Items:", 15, 90);
@@ -507,15 +510,15 @@
                 const vendorNumber = '233545800158'; // Replace with your number
                 const itemsText = cartItems.map(item => 
                     `${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`
-                ).join('\n');
-                const orderCode = `Order Code: ${Date.now()}`;
+                ).join(' \n');
 
                 const message = encodeURIComponent(
                     `📱 New Food Order\n` +
-                    `${orderCode}\n` +
+                    `Order Code: \n` +
                     `👤 Customer: ${name}\n` +
                     `📞 Phone: ${phone}\n` +
                     `🏠 Address: ${address}\n\n` +
+                    `Order Code: ${address}\n` +
                     `📦 Order Items:${itemsText}\n\n` +
                     `💵 Total: $${cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}`
                 );
