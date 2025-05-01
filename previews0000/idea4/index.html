@@ -433,6 +433,10 @@
                     compress: true
                 });
 
+
+                doc.setFont('Helvetica', 'normal');
+                const orderCode = `Order Code: ${Date.now()}`;
+
                 // PDF Content
                 doc.setFontSize(isMobile ? 14 : 18);
                 doc.setTextColor('#ff6b6b');
@@ -451,7 +455,7 @@
                 doc.text(`Name: ${name}`, 15, 60);
                 doc.text(`Phone: ${phone}`, 15, 65);
                 doc.text(`Address: ${address}`, 15, 70);
-                doc.text(`Order Code: ${Date.now()}`, 15, 75);
+                doc.text(`Order Code: ${orderCode}`, 15, 75);
 
                 // Order Items
                 doc.text("Order Items:", 15, 90);
@@ -508,11 +512,12 @@
                 ).join('%0A');
 
                 const message = encodeURIComponent(
-                    `📱 New Food Order%0A%0A` +
-                    `👤 Customer: ${name}%0A` +
-                    `📞 Phone: ${phone}%0A` +
-                    `🏠 Address: ${address}%0A%0A` +
-                    `📦 Order Items:%0A${itemsText}%0A%0A` +
+                    `📱 New Food Order\n` +
+                    `Order Code: ${orderCode}\n` +
+                    `👤 Customer: ${name}\n` +
+                    `📞 Phone: ${phone}\n` +
+                    `🏠 Address: ${address}\n` +
+                    `📦 Order Items:${itemsText}\n\n` +
                     `💵 Total: $${cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}`
                 );
 
