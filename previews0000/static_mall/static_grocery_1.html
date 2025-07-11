@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grocery Sales App (Offline)</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --secondary: #f9fbe7;
+            --accent: #ff9800;
+            --text: #212121;
+            --light: #f5f5f5;
+            --danger: #d32f2f;
+            --success: #388e3c;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--text);
+            line-height: 1.6;
+            padding-bottom: 80px;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .app-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .app-title h1 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        
+        .status-indicator.offline::before {
+            content: "";
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: var(--danger);
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        
+        .status-indicator.online::before {
+            content: "";
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: var(--success);
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        
+        nav {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .nav-btn {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            color: var(--text);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .nav-btn.active {
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .nav-btn.active::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary);
+        }
+        
+        .container {
+            padding: 1rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+            color: var(--primary-dark);
+        }
+        
+        .search-box {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+            font-size: 1rem;
+        }
+        
+        .search-box button {
+            padding: 0 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .product-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .product-image {
+            height: 120px;
+            background-color: #f9f9f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #ccc;
+        }
+        
+        .product-info {
+            padding: 0.75rem;
+        }
+        
+        .product-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .product-price {
+            color: var(--primary-dark);
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+        
+        .product-stock {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .product-stock.low {
+            color: var(--danger);
+        }
+        
+        .cart-items {
+            margin-bottom: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cart-item-info {
+            flex: 1;
+        }
+        
+        .cart-item-name {
+            font-weight: 500;
+        }
+        
+        .cart-item-price {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+        }
+        
+        .cart-item-qty {
+            width: 40px;
+            text-align: center;
+            margin: 0 0.5rem;
+        }
+        
+        .qty-btn {
+            width: 30px;
+            height: 30px;
+            background: #eee;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .cart-summary {
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .summary-total {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid #ddd;
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: var(--primary-dark);
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: var(--text);
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .inventory-list {
+            list-style: none;
+        }
+        
+        .inventory-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .inventory-item:last-child {
+            border-bottom: none;
+        }
+        
+        .inventory-name {
+            flex: 1;
+        }
+        
+        .inventory-stock {
+            width: 80px;
+            text-align: right;
+        }
+        
+        .inventory-stock.low {
+            color: var(--danger);
+            font-weight: 500;
+        }
+        
+        .receipt {
+            background: white;
+            padding: 1.5rem;
+            font-family: monospace;
+        }
+        
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .receipt-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .receipt-details {
+            margin-bottom: 1rem;
+        }
+        
+        .receipt-items {
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+        
+        .receipt-items td {
+            padding: 0.25rem 0;
+        }
+        
+        .receipt-total {
+            text-align: right;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed #000;
+        }
+        
+        .print-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .barcode-scanner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 1rem;
+        }
+        
+        #barcode-video {
+            width: 100%;
+            max-width: 400px;
+            background: #000;
+            margin-bottom: 1rem;
+        }
+        
+        #barcode-canvas {
+            display: none;
+        }
+        
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .receipt, .receipt * {
+                visibility: visible;
+            }
+            .receipt {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+        }
+        
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="app-title">
+            <h1>Grocery Sales App</h1>
+            <div class="status-indicator offline">Offline Mode</div>
+        </div>
+    </header>
+    
+    <nav>
+        <button class="nav-btn active" data-section="products">Products</button>
+        <button class="nav-btn" data-section="cart">Cart</button>
+        <button class="nav-btn" data-section="inventory">Inventory</button>
+        <button class="nav-btn" data-section="receipt">Receipt</button>
+    </nav>
+    
+    <div class="container">
+        <!-- Products Section -->
+        <section id="products" class="section active">
+            <div class="card">
+                <h2 class="card-title">Product Catalog</h2>
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Search products...">
+                    <button id="search-btn">Search</button>
+                </div>
+                <div class="barcode-scanner">
+                    <video id="barcode-video" playsinline></video>
+                    <canvas id="barcode-canvas"></canvas>
+                    <button id="start-scan" class="btn btn-secondary">Scan Barcode</button>
+                    <button id="stop-scan" class="btn" style="display:none;">Stop Scan</button>
+                </div>
+                <div class="product-grid" id="product-grid">
+                    <!-- Products will be dynamically added here -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- Cart Section -->
+        <section id="cart" class="section">
+            <div class="card">
+                <h2 class="card-title">Current Sale</h2>
+                <div class="cart-items" id="cart-items">
+                    <!-- Cart items will be dynamically added here -->
+                </div>
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">$0.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Tax (8%):</span>
+                        <span id="tax">$0.00</span>
+                    </div>
+                    <div class="summary-row summary-total">
+                        <span>Total:</span>
+                        <span id="total">$0.00</span>
+                    </div>
+                </div>
+                <button id="checkout-btn" class="btn">Complete Sale</button>
+                <button id="clear-cart" class="btn btn-secondary">Clear Cart</button>
+            </div>
+        </section>
+        
+        <!-- Inventory Section -->
+        <section id="inventory" class="section">
+            <div class="card">
+                <h2 class="card-title">Inventory Management</h2>
+                <ul class="inventory-list" id="inventory-list">
+                    <!-- Inventory items will be dynamically added here -->
+                </ul>
+                <button id="add-product" class="btn btn-secondary">Add New Product</button>
+            </div>
+        </section>
+        
+        <!-- Receipt Section -->
+        <section id="receipt" class="section">
+            <div class="card">
+                <h2 class="card-title">Sale Receipt</h2>
+                <div class="receipt" id="receipt-content">
+                    <!-- Receipt content will be dynamically added here -->
+                </div>
+                <div class="print-actions">
+                    <button id="print-receipt" class="btn">Print Receipt</button>
+                    <button id="new-sale" class="btn btn-secondary">New Sale</button>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <div class="notification" id="notification">Product added to cart!</div>
+    
+    <footer>
+        <div>Sales: <span id="total-sales">0</span></div>
+        <div>Revenue: <span id="total-revenue">$0.00</span></div>
+    </footer>
+
+    <script>
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize IndexedDB
+            initDB();
+            
+            // Set up UI
+            setupNavigation();
+            setupEventListeners();
+            
+            // Load initial data
+            loadProducts();
+            loadInventory();
+            
+            // Set up offline detection
+            setupOfflineDetection();
+            
+            // Register service worker for PWA
+            registerServiceWorker();
+        });
+
+        // Database initialization
+        let db;
+        function initDB() {
+            const request = indexedDB.open('GrocerySalesDB', 1);
+            
+            request.onupgradeneeded = function(event) {
+                db = event.target.result;
+                
+                // Create products store
+                if (!db.objectStoreNames.contains('products')) {
+                    const productsStore = db.createObjectStore('products', { keyPath: 'id', autoIncrement: true });
+                    productsStore.createIndex('name', 'name', { unique: false });
+                    productsStore.createIndex('barcode', 'barcode', { unique: true });
+                }
+                
+                // Create sales store
+                if (!db.objectStoreNames.contains('sales')) {
+                    const salesStore = db.createObjectStore('sales', { keyPath: 'id', autoIncrement: true });
+                    salesStore.createIndex('date', 'date', { unique: false });
+                }
+                
+                // Create inventory store
+                if (!db.objectStoreNames.contains('inventory')) {
+                    const inventoryStore = db.createObjectStore('inventory', { keyPath: 'productId' });
+                }
+                
+                // Add sample products if needed
+                event.target.transaction.oncomplete = function() {
+                    addSampleData();
+                };
+            };
+            
+            request.onsuccess = function(event) {
+                db = event.target.result;
+                console.log('Database initialized successfully');
+            };
+            
+            request.onerror = function(event) {
+                console.error('Database error:', event.target.error);
+            };
+        }
+
+        // Add sample products to the database
+        function addSampleData() {
+            const products = [
+                { name: 'Milk (1L)', price: 2.99, barcode: '123456789', stock: 24 },
+                { name: 'Bread (Whole Wheat)', price: 1.99, barcode: '987654321', stock: 18 },
+                { name: 'Eggs (12pk)', price: 3.49, barcode: '456123789', stock: 12 },
+                { name: 'Bananas (1kg)', price: 1.49, barcode: '789456123', stock: 15 },
+                { name: 'Chicken Breast (1kg)', price: 8.99, barcode: '321654987', stock: 8 },
+                { name: 'Rice (5kg)', price: 6.99, barcode: '654987321', stock: 10 },
+                { name: 'Apples (1kg)', price: 2.49, barcode: '147258369', stock: 20 },
+                { name: 'Pasta (500g)', price: 1.29, barcode: '369258147', stock: 15 }
+            ];
+            
+            const transaction = db.transaction(['products', 'inventory'], 'readwrite');
+            const productStore = transaction.objectStore('products');
+            const inventoryStore = transaction.objectStore('inventory');
+            
+            products.forEach(product => {
+                // Add product
+                const request = productStore.add({
+                    name: product.name,
+                    price: product.price,
+                    barcode: product.barcode
+                });
+                
+                request.onsuccess = function(event) {
+                    const productId = event.target.result;
+                    // Add inventory entry
+                    inventoryStore.add({
+                        productId: productId,
+                        stock: product.stock
+                    });
+                };
+            });
+        }
+
+        // Navigation setup
+        function setupNavigation() {
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const sections = document.querySelectorAll('.section');
+            
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const sectionId = button.dataset.section;
+                    
+                    // Update active button
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // Show active section
+                    sections.forEach(section => section.classList.remove('active'));
+                    document.getElementById(sectionId).classList.add('active');
+                });
+            });
+        }
+
+        // Event listeners setup
+        function setupEventListeners() {
+            // Search functionality
+            document.getElementById('search-btn').addEventListener('click', searchProducts);
+            document.getElementById('search-input').addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    searchProducts();
+                }
+            });
+            
+            // Barcode scanning
+            document.getElementById('start-scan').addEventListener('click', startBarcodeScan);
+            document.getElementById('stop-scan').addEventListener('click', stopBarcodeScan);
+            
+            // Cart actions
+            document.getElementById('checkout-btn').addEventListener('click', completeSale);
+            document.getElementById('clear-cart').addEventListener('click', clearCart);
+            
+            // Receipt actions
+            document.getElementById('print-receipt').addEventListener('click', printReceipt);
+            document.getElementById('new-sale').addEventListener('click', newSale);
+            
+            // Inventory actions
+            document.getElementById('add-product').addEventListener('click', addProductModal);
+        }
+
+        // Load products from database
+        function loadProducts() {
+            const productGrid = document.getElementById('product-grid');
+            productGrid.innerHTML = '';
+            
+            const transaction = db.transaction(['products', 'inventory'], 'readonly');
+            const productStore = transaction.objectStore('products');
+            const inventoryStore = transaction.objectStore('inventory');
+            const request = productStore.getAll();
+            
+            request.onsuccess = function(event) {
+                const products = event.target.result;
+                
+                products.forEach(product => {
+                    // Get stock for this product
+                    const stockRequest = inventoryStore.get(product.id);
+                    
+                    stockRequest.onsuccess = function(e) {
+                        const stock = e.target.result ? e.target.result.stock : 0;
+                        
+                        // Create product card
+                        const productCard = document.createElement('div');
+                        productCard.className = 'product-card';
+                        productCard.dataset.id = product.id;
+                        productCard.innerHTML = `
+                            <div class="product-image">${product.name.charAt(0)}</div>
+                            <div class="product-info">
+                                <div class="product-name">${product.name}</div>
+                                <div class="product-price">$${product.price.toFixed(2)}</div>
+                                <div class="product-stock ${stock < 5 ? 'low' : ''}">Stock: ${stock}</div>
+                            </div>
+                        `;
+                        
+                        // Add to cart on click
+                        productCard.addEventListener('click', () => {
+                            addToCart(product.id, product.name, product.price);
+                            showNotification(`${product.name} added to cart`);
+                        });
+                        
+                        productGrid.appendChild(productCard);
+                    };
+                });
+            };
+        }
+
+        // Load inventory
+        function loadInventory() {
+            const inventoryList = document.getElementById('inventory-list');
+            inventoryList.innerHTML = '';
+            
+            const transaction = db.transaction(['products', 'inventory'], 'readonly');
+            const productStore = transaction.objectStore('products');
+            const inventoryStore = transaction.objectStore('inventory');
+            const request = inventoryStore.getAll();
+            
+            request.onsuccess = function(event) {
+                const inventoryItems = event.target.result;
+                
+                inventoryItems.forEach(item => {
+                    const productRequest = productStore.get(item.productId);
+                    
+                    productRequest.onsuccess = function(e) {
+                        const product = e.target.result;
+                        
+                        const li = document.createElement('li');
+                        li.className = 'inventory-item';
+                        li.innerHTML = `
+                            <div class="inventory-name">${product.name}</div>
+                            <div class="inventory-stock ${item.stock < 5 ? 'low' : ''}">${item.stock} units</div>
+                        `;
+                        
+                        inventoryList.appendChild(li);
+                    };
+                });
+            };
+        }
+
+        // Add to cart function
+        function addToCart(productId, name, price) {
+            // Check if already in cart
+            const existingItem = document.querySelector(`.cart-item[data-id="${productId}"]`);
+            
+            if (existingItem) {
+                // Increase quantity
+                const qtyElement = existingItem.querySelector('.cart-item-qty');
+                let qty = parseInt(qtyElement.textContent);
+                qty++;
+                qtyElement.textContent = qty;
+            } else {
+                // Add new item to cart
+                const cartItems = document.getElementById('cart-items');
+                const item = document.createElement('div');
+                item.className = 'cart-item';
+                item.dataset.id = productId;
+                item.innerHTML = `
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${name}</div>
+                        <div class="cart-item-price">$${price.toFixed(2)} each</div>
+                    </div>
+                    <div class="cart-item-actions">
+                        <button class="qty-btn minus">-</button>
+                        <span class="cart-item-qty">1</span>
+                        <button class="qty-btn plus">+</button>
+                    </div>
+                `;
+                
+                // Add event listeners to quantity buttons
+                item.querySelector('.minus').addEventListener('click', () => updateQuantity(item, -1));
+                item.querySelector('.plus').addEventListener('click', () => updateQuantity(item, 1));
+                
+                cartItems.appendChild(item);
+            }
+            
+            // Update totals
+            updateCartTotals();
+        }
+
+        // Update item quantity in cart
+        function updateQuantity(item, change) {
+            const qtyElement = item.querySelector('.cart-item-qty');
+            let qty = parseInt(qtyElement.textContent);
+            qty += change;
+            
+            if (qty < 1) {
+                item.remove();
+            } else {
+                qtyElement.textContent = qty;
+            }
+            
+            updateCartTotals();
+        }
+
+        // Update cart totals
+        function updateCartTotals() {
+            let subtotal = 0;
+            
+            document.querySelectorAll('.cart-item').forEach(item => {
+                const price = parseFloat(item.querySelector('.cart-item-price').textContent.replace('$', ''));
+                const qty = parseInt(item.querySelector('.cart-item-qty').textContent);
+                subtotal += price * qty;
+            });
+            
+            const tax = subtotal * 0.08; // 8% tax
+            const total = subtotal + tax;
+            
+            document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
+            document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+        }
+
+        // Complete sale
+        function completeSale() {
+            const cartItems = document.querySelectorAll('.cart-item');
+            if (cartItems.length === 0) {
+                showNotification('Cart is empty!');
+                return;
+            }
+            
+            const transaction = db.transaction(['sales', 'inventory'], 'readwrite');
+            const salesStore = transaction.objectStore('sales');
+            const inventoryStore = transaction.objectStore('inventory');
+            
+            const sale = {
+                date: new Date(),
+                items: [],
+                subtotal: parseFloat(document.getElementById('subtotal').textContent.replace('$', '')),
+                tax: parseFloat(document.getElementById('tax').textContent.replace('$', '')),
+                total: parseFloat(document.getElementById('total').textContent.replace('$', ''))
+            };
+            
+            // Process each item
+            cartItems.forEach(item => {
+                const productId = parseInt(item.dataset.id);
+                const qty = parseInt(item.querySelector('.cart-item-qty').textContent);
+                
+                // Add to sale items
+                sale.items.push({
+                    productId: productId,
+                    quantity: qty
+                });
+                
+                // Update inventory
+                const inventoryRequest = inventoryStore.get(productId);
+                inventoryRequest.onsuccess = function(e) {
+                    const inventory = e.target.result;
+                    inventory.stock -= qty;
+                    inventoryStore.put(inventory);
+                };
+            });
+            
+            // Save sale
+            salesStore.add(sale);
+            
+            // Update sales summary
+            updateSalesSummary();
+            
+            // Generate receipt
+            generateReceipt(sale);
+            
+            // Clear cart
+            clearCart();
+            
+            // Switch to receipt view
+            document.querySelector('.nav-btn[data-section="receipt"]').click();
+        }
+
+        // Generate receipt
+        function generateReceipt(sale) {
+            const receiptContent = document.getElementById('receipt-content');
+            let itemsHTML = '';
+            
+            sale.items.forEach(item => {
+                // Get product name from products store
+                const transaction = db.transaction(['products'], 'readonly');
+                const productStore = transaction.objectStore('products');
+                const request = productStore.get(item.productId);
+                
+                request.onsuccess = function(e) {
+                    const product = e.target.result;
+                    
+                    itemsHTML += `
+                        <tr>
+                            <td>${product.name}</td>
+                            <td>${item.quantity}</td>
+                            <td>$${(product.price * item.quantity).toFixed(2)}</td>
+                        </tr>
+                    `;
+                    
+                    // When all items are processed
+                    if (itemsHTML.split('<tr>').length - 1 === sale.items.length) {
+                        receiptContent.innerHTML = `
+                            <div class="receipt-header">
+                                <div class="receipt-title">GROCERY STORE</div>
+                                <div>123 Market Street</div>
+                                <div>Phone: (555) 123-4567</div>
+                            </div>
+                            <div class="receipt-details">
+                                <div>Date: ${sale.date.toLocaleDateString()}</div>
+                                <div>Time: ${sale.date.toLocaleTimeString()}</div>
+                            </div>
+                            <table class="receipt-items">
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Qty</th>
+                                    <th>Total</th>
+                                </tr>
+                                ${itemsHTML}
+                            </table>
+                            <div class="receipt-total">
+                                Subtotal: $${sale.subtotal.toFixed(2)}<br>
+                                Tax: $${sale.tax.toFixed(2)}<br>
+                                <strong>Total: $${sale.total.toFixed(2)}</strong>
+                            </div>
+                            <div style="text-align:center; margin-top:1rem;">Thank you for your purchase!</div>
+                        `;
+                    }
+                };
+            });
+        }
+
+        // Print receipt
+        function printReceipt() {
+            window.print();
+        }
+
+        // New sale
+        function newSale() {
+            document.querySelector('.nav-btn[data-section="products"]').click();
+        }
+
+        // Clear cart
+        function clearCart() {
+            document.getElementById('cart-items').innerHTML = '';
+            updateCartTotals();
+        }
+
+        // Update sales summary in footer
+        function updateSalesSummary() {
+            const salesStore = db.transaction('sales', 'readonly').objectStore('sales');
+            const countRequest = salesStore.count();
+            const totalRequest = salesStore.getAll();
+            
+            countRequest.onsuccess = function(e) {
+                document.getElementById('total-sales').textContent = e.target.result;
+            };
+            
+            totalRequest.onsuccess = function(e) {
+                const sales = e.target.result;
+                let revenue = 0;
+                sales.forEach(sale => revenue += sale.total);
+                document.getElementById('total-revenue').textContent = `$${revenue.toFixed(2)}`;
+            };
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Search products
+        function searchProducts() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const productCards = document.querySelectorAll('.product-card');
+            
+            productCards.forEach(card => {
+                const productName = card.querySelector('.product-name').textContent.toLowerCase();
+                if (productName.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Start barcode scanning
+        function startBarcodeScan() {
+            const video = document.getElementById('barcode-video');
+            const canvas = document.getElementById('barcode-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Show video, hide start button, show stop button
+            video.style.display = 'block';
+            document.getElementById('start-scan').style.display = 'none';
+            document.getElementById('stop-scan').style.display = 'block';
+            
+            // Access camera
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                .then(function(stream) {
+                    video.srcObject = stream;
+                    video.play();
+                    
+                    // Start scanning
+                    function scanBarcode() {
+                        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                            canvas.width = video.videoWidth;
+                            canvas.height = video.videoHeight;
+                            
+                            // Draw video frame to canvas
+                            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                            
+                            // Get image data
+                            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                            
+                            // Simple barcode detection (in a real app, you'd use a library)
+                            // This is a placeholder for actual barcode scanning logic
+                            const detected = detectBarcode(imageData);
+                            
+                            if (detected) {
+                                // Look up product by barcode
+                                findProductByBarcode(detected);
+                                stopBarcodeScan();
+                            }
+                        }
+                        
+                        requestAnimationFrame(scanBarcode);
+                    }
+                    
+                    scanBarcode();
+                })
+                .catch(function(err) {
+                    console.error('Camera access error:', err);
+                    showNotification('Camera access denied. Please enable camera permissions.');
+                    stopBarcodeScan();
+                });
+        }
+
+        // Stop barcode scanning
+        function stopBarcodeScan() {
+            const video = document.getElementById('barcode-video');
+            const stream = video.srcObject;
+            
+            if (stream) {
+                const tracks = stream.getTracks();
+                tracks.forEach(track => track.stop());
+                video.srcObject = null;
+            }
+            
+            video.style.display = 'none';
+            document.getElementById('start-scan').style.display = 'block';
+            document.getElementById('stop-scan').style.display = 'none';
+        }
+
+        // Placeholder barcode detection
+        function detectBarcode(imageData) {
+            // In a real implementation, this would contain actual barcode detection logic
+            // For this demo, we'll simulate detection after 3 seconds
+            return Math.random() > 0.7 ? '123456789' : null;
+        }
+
+        // Find product by barcode
+        function findProductByBarcode(barcode) {
+            const transaction = db.transaction('products', 'readonly');
+            const productStore = transaction.objectStore('products');
+            const index = productStore.index('barcode');
+            const request = index.get(barcode);
+            
+            request.onsuccess = function(e) {
+                const product = e.target.result;
+                if (product) {
+                    addToCart(product.id, product.name, product.price);
+                    showNotification(`Scanned: ${product.name}`);
+                } else {
+                    showNotification('Product not found');
+                }
+            };
+        }
+
+        // Add product modal (simplified)
+        function addProductModal() {
+            const name = prompt('Enter product name:');
+            if (!name) return;
+            
+            const price = parseFloat(prompt('Enter product price:'));
+            if (isNaN(price)) return;
+            
+            const barcode = prompt('Enter barcode (optional):') || '';
+            const stock = parseInt(prompt('Enter initial stock:')) || 0;
+            
+            // Add to database
+            const transaction = db.transaction(['products', 'inventory'], 'readwrite');
+            const productStore = transaction.objectStore('products');
+            const inventoryStore = transaction.objectStore('inventory');
+            
+            const productRequest = productStore.add({ name, price, barcode });
+            
+            productRequest.onsuccess = function(e) {
+                const productId = e.target.result;
+                inventoryStore.add({ productId, stock });
+                
+                // Reload products and inventory
+                loadProducts();
+                loadInventory();
+                
+                showNotification('Product added successfully');
+            };
+        }
+
+        // Offline detection
+        function setupOfflineDetection() {
+            const statusIndicator = document.querySelector('.status-indicator');
+            
+            function updateOnlineStatus() {
+                if (navigator.onLine) {
+                    statusIndicator.textContent = 'Online Mode';
+                    statusIndicator.className = 'status-indicator online';
+                } else {
+                    statusIndicator.textContent = 'Offline Mode';
+                    statusIndicator.className = 'status-indicator offline';
+                }
+            }
+            
+            window.addEventListener('online', updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
+            updateOnlineStatus();
+        }
+
+        // Register service worker for PWA
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            }
+        }
+    </script>
+</body>
+</html>
