@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grocery Sales App (Offline + Secure Data Transfer)</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        /* Previous styles remain unchanged */
+        
+        /* New styles for data management */
+        .data-management {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .data-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .data-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .data-card h3 {
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-label {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #3498db;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .file-label:hover {
+            background: #2980b9;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 0.5rem 0 1rem;
+            font-size: 1rem;
+        }
+        
+        .data-status {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .data-status.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        
+        .data-status.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+        
+        .export-info {
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .export-steps {
+            margin: 0.5rem 0 0 1.5rem;
+        }
+        
+        .export-steps li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="app-title">
+            <h1>Grocery Sales App</h1>
+            <div class="status-indicator offline">Offline Mode</div>
+        </div>
+    </header>
+    
+    <nav>
+        <button class="nav-btn active" data-section="products">Products</button>
+        <button class="nav-btn" data-section="cart">Cart</button>
+        <button class="nav-btn" data-section="inventory">Inventory</button>
+        <button class="nav-btn" data-section="receipt">Receipt</button>
+        <button class="nav-btn" data-section="data">Data</button>
+    </nav>
+    
+    <div class="container">
+        <!-- Products Section -->
+        <section id="products" class="section active">
+            <!-- ... (unchanged) ... -->
+        </section>
+        
+        <!-- Cart Section -->
+        <section id="cart" class="section">
+            <!-- ... (unchanged) ... -->
+        </section>
+        
+        <!-- Inventory Section -->
+        <section id="inventory" class="section">
+            <!-- ... (unchanged) ... -->
+        </section>
+        
+        <!-- Receipt Section -->
+        <section id="receipt" class="section">
+            <!-- ... (unchanged) ... -->
+        </section>
+        
+        <!-- New Data Management Section -->
+        <section id="data" class="section">
+            <div class="card">
+                <h2 class="card-title">Data Management</h2>
+                
+                <div class="export-info">
+                    <h3>Secure Data Transfer</h3>
+                    <p>Export an encrypted backup file to share data across devices:</p>
+                    <ol class="export-steps">
+                        <li><strong>Export</strong> data from this device</li>
+                        <li>Transfer the encrypted file to another device (USB, email, etc.)</li>
+                        <li><strong>Import</strong> the file on the target device</li>
+                        <li>Enter the same password to decrypt the data</li>
+                    </ol>
+                </div>
+                
+                <div class="data-management">
+                    <h3>Export Data</h3>
+                    <p>Create an encrypted backup of all app data:</p>
+                    <div class="data-actions">
+                        <input type="password" id="export-password" class="password-input" placeholder="Enter encryption password" autocomplete="off">
+                        <button id="export-data" class="btn">Export Encrypted Data</button>
+                    </div>
+                    <div id="export-status" class="data-status"></div>
+                </div>
+                
+                <div class="data-management">
+                    <h3>Import Data</h3>
+                    <p>Restore from an encrypted backup file:</p>
+                    <div class="data-actions">
+                        <input type="file" id="import-file" class="file-input" accept=".json">
+                        <label for="import-file" class="file-label">Select Backup File</label>
+                        <input type="password" id="import-password" class="password-input" placeholder="Enter decryption password" autocomplete="off">
+                        <button id="import-data" class="btn">Import Data</button>
+                    </div>
+                    <div id="import-status" class="data-status"></div>
+                </div>
+                
+                <div class="data-card">
+                    <h3>Data Safety Instructions</h3>
+                    <ul class="export-steps">
+                        <li><strong>Choose a strong password</strong> - at least 12 characters with mix of letters, numbers and symbols</li>
+                        <li><strong>Store passwords securely</strong> - you'll need the same password to import data</li>
+                        <li><strong>Backup regularly</strong> - export data at the end of each business day</li>
+                        <li><strong>Verify imports</strong> - check data after import to ensure everything transferred correctly</li>
+                        <li><strong>Keep multiple backups</strong> - maintain backups from different dates</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- ... (rest of previous HTML) ... -->
+
+    <script>
+        // ... (previous JavaScript code remains) ...
+
+        // Update setupEventListeners to include new buttons
+        function setupEventListeners() {
+            // ... (previous event listeners) ...
+            
+            // Data management
+            document.getElementById('export-data').addEventListener('click', exportData);
+            document.getElementById('import-data').addEventListener('click', importData);
+        }
+
+        // =====================================
+        // Encryption/Decryption Functions
+        // =====================================
+        
+        // Generate a cryptographic key from password
+        async function getKeyFromPassword(password, salt) {
+            const encoder = new TextEncoder();
+            const passwordBuffer = encoder.encode(password);
+            const importedKey = await crypto.subtle.importKey(
+                'raw',
+                passwordBuffer,
+                { name: 'PBKDF2' },
+                false,
+                ['deriveBits', 'deriveKey']
+            );
+            
+            return crypto.subtle.deriveKey(
+                {
+                    name: 'PBKDF2',
+                    salt: salt,
+                    iterations: 100000,
+                    hash: 'SHA-256'
+                },
+                importedKey,
+                { name: 'AES-GCM', length: 256 },
+                false,
+                ['encrypt', 'decrypt']
+            );
+        }
+
+        // Encrypt data
+        async function encryptData(data, password) {
+            try {
+                const salt = crypto.getRandomValues(new Uint8Array(16));
+                const iv = crypto.getRandomValues(new Uint8Array(12));
+                const key = await getKeyFromPassword(password, salt);
+                
+                const encoder = new TextEncoder();
+                const dataBuffer = encoder.encode(JSON.stringify(data));
+                
+                const encryptedData = await crypto.subtle.encrypt(
+                    { name: 'AES-GCM', iv: iv },
+                    key,
+                    dataBuffer
+                );
+                
+                // Combine salt, iv, and encrypted data
+                const combined = new Uint8Array(salt.length + iv.length + encryptedData.byteLength);
+                combined.set(salt, 0);
+                combined.set(iv, salt.length);
+                combined.set(new Uint8Array(encryptedData), salt.length + iv.length);
+                
+                return combined;
+            } catch (error) {
+                console.error('Encryption error:', error);
+                throw new Error('Encryption failed');
+            }
+        }
+
+        // Decrypt data
+        async function decryptData(combined, password) {
+            try {
+                const salt = combined.slice(0, 16);
+                const iv = combined.slice(16, 28);
+                const encryptedData = combined.slice(28);
+                
+                const key = await getKeyFromPassword(password, salt);
+                
+                const decryptedData = await crypto.subtle.decrypt(
+                    { name: 'AES-GCM', iv: iv },
+                    key,
+                    encryptedData
+                );
+                
+                const decoder = new TextDecoder();
+                return JSON.parse(decoder.decode(decryptedData));
+            } catch (error) {
+                console.error('Decryption error:', error);
+                throw new Error('Decryption failed - wrong password or corrupted file');
+            }
+        }
+
+        // =====================================
+        // Data Export Functionality
+        // =====================================
+        
+        // Export all data as encrypted JSON
+        async function exportData() {
+            const password = document.getElementById('export-password').value;
+            if (!password) {
+                showStatus('export-status', 'Please enter an encryption password', 'error');
+                return;
+            }
+            
+            try {
+                showStatus('export-status', 'Preparing data...', '');
+                
+                // Get all data from IndexedDB
+                const data = await getAllData();
+                
+                showStatus('export-status', 'Encrypting data...', '');
+                const encryptedData = await encryptData(data, password);
+                
+                // Create download
+                const blob = new Blob([encryptedData], { type: 'application/octet-stream' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `grocery-data-${new Date().toISOString().slice(0, 10)}.encrypted`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showStatus('export-status', 'Export successful! File downloaded.', 'success');
+                document.getElementById('export-password').value = '';
+            } catch (error) {
+                console.error('Export failed:', error);
+                showStatus('export-status', `Export failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Retrieve all app data
+        function getAllData() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['products', 'sales', 'inventory'], 'readonly');
+                const productStore = transaction.objectStore('products');
+                const salesStore = transaction.objectStore('sales');
+                const inventoryStore = transaction.objectStore('inventory');
+                
+                const productsRequest = productStore.getAll();
+                const salesRequest = salesStore.getAll();
+                const inventoryRequest = inventoryStore.getAll();
+                
+                Promise.all([
+                    requestToPromise(productsRequest),
+                    requestToPromise(salesRequest),
+                    requestToPromise(inventoryRequest)
+                ])
+                .then(([products, sales, inventory]) => {
+                    resolve({ products, sales, inventory });
+                })
+                .catch(reject);
+            });
+        }
+
+        // Helper to convert IndexedDB request to promise
+        function requestToPromise(request) {
+            return new Promise((resolve, reject) => {
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // =====================================
+        // Data Import Functionality
+        // =====================================
+        
+        // Import data from encrypted file
+        async function importData() {
+            const fileInput = document.getElementById('import-file');
+            const password = document.getElementById('import-password').value;
+            
+            if (!fileInput.files.length) {
+                showStatus('import-status', 'Please select a backup file', 'error');
+                return;
+            }
+            
+            if (!password) {
+                showStatus('import-status', 'Please enter the decryption password', 'error');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            
+            try {
+                showStatus('import-status', 'Reading file...', '');
+                const fileBuffer = await readFileAsArrayBuffer(file);
+                
+                showStatus('import-status', 'Decrypting data...', '');
+                const decryptedData = await decryptData(new Uint8Array(fileBuffer), password);
+                
+                if (!decryptedData.products || !decryptedData.sales || !decryptedData.inventory) {
+                    throw new Error('Invalid file format');
+                }
+                
+                showStatus('import-status', 'Importing data...', '');
+                await replaceAllData(decryptedData);
+                
+                showStatus('import-status', 'Import successful! Reloading data...', 'success');
+                
+                // Clear inputs
+                fileInput.value = '';
+                document.getElementById('import-password').value = '';
+                
+                // Reload UI
+                setTimeout(() => {
+                    loadProducts();
+                    loadInventory();
+                    updateSalesSummary();
+                    showNotification('Data imported successfully!');
+                }, 1500);
+            } catch (error) {
+                console.error('Import failed:', error);
+                showStatus('import-status', `Import failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Read file as ArrayBuffer
+        function readFileAsArrayBuffer(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        // Replace all data in the database
+        function replaceAllData(data) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(['products', 'sales', 'inventory'], 'readwrite');
+                
+                // Clear existing data
+                transaction.objectStore('products').clear();
+                transaction.objectStore('sales').clear();
+                transaction.objectStore('inventory').clear();
+                
+                // Add products
+                data.products.forEach(product => {
+                    transaction.objectStore('products').add(product);
+                });
+                
+                // Add sales
+                data.sales.forEach(sale => {
+                    transaction.objectStore('sales').add(sale);
+                });
+                
+                // Add inventory
+                data.inventory.forEach(item => {
+                    transaction.objectStore('inventory').add(item);
+                });
+                
+                transaction.oncomplete = resolve;
+                transaction.onerror = reject;
+            });
+        }
+
+        // =====================================
+        // Helper Functions
+        // =====================================
+        
+        // Show status message
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = 'data-status';
+            
+            if (type) {
+                element.classList.add(type);
+            }
+        }
+        
+        // ... (rest of previous JavaScript) ...
+    </script>
+</body>
+</html>
