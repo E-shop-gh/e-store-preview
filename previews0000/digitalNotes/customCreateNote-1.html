@@ -196,6 +196,7 @@
             font-size: 14px;
             line-height: 1.5;
             color: #a0c4ff;
+            white-space: pre-wrap;
         }
         
         .entry-count {
@@ -340,6 +341,49 @@
             align-items: center;
             gap: 10px;
         }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 10000;
+            animation: slideIn 0.3s ease-out, fadeOut 0.5s ease-in 3s forwards;
+        }
+        
+        .notification.success {
+            background: #2ecc71;
+        }
+        
+        .notification.error {
+            background: #e74c3c;
+        }
+        
+        .notification.info {
+            background: #3498db;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        .input-hint {
+            font-size: 0.85rem;
+            color: #a0c4ff;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
     </style>
 </head>
 <body>
@@ -379,6 +423,9 @@
                 <div class="input-group">
                     <label for="desc"><i class="fas fa-align-left"></i> Description:</label>
                     <textarea id="desc" placeholder="Enter description text"></textarea>
+                    <div class="input-hint">
+                        <i class="fas fa-info-circle"></i> Press Enter for new line
+                    </div>
                 </div>
                 
                 <div class="input-group">
@@ -742,40 +789,55 @@
                 notification.style.animation = 'fadeOut 0.5s ease-in forwards';
                 setTimeout(() => notification.remove(), 500);
             }, 3000);
-            
-            // Add keyframes for animation
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes slideIn {
-                    from { transform: translateX(100%); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
-                @keyframes fadeOut {
-                    from { opacity: 1; }
-                    to { opacity: 0; }
-                }
-            `;
-            document.head.appendChild(style);
         }
         
-        // Allow pressing Enter in inputs to add entry
-        [topicInput, descInput, exInput].forEach(input => {
-            input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    addBtn.click();
-                }
-            });
+        // Handle Enter key differently for description field
+        topicInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addBtn.click();
+            }
         });
         
-        // Allow pressing Enter in filename input to confirm export
-        [filenameInput, passwordInput, confirmPasswordInput].forEach(input => {
-            input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    confirmExport.click();
-                }
-            });
+        exInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addBtn.click();
+            }
+        });
+        
+        // Description field - allow Enter for new lines
+        descInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                // If user presses Enter without Shift, prevent form submission
+                // But allow default behavior (new line) to happen
+            } else if (e.key === 'Enter' && e.shiftKey) {
+                // Shift+Enter will submit the form
+                e.preventDefault();
+                addBtn.click();
+            }
+        });
+        
+        // Allow pressing Enter in filename and password fields
+        filenameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                confirmExport.click();
+            }
+        });
+        
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                confirmExport.click();
+            }
+        });
+        
+        confirmPasswordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                confirmExport.click();
+            }
         });
         
         // Initialize
