@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Dictionary Builder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0d1b2a, #1b263b, #0d1b2a);
+            color: #fff;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+            padding: 20px;
+        }
+        
+        /* Login container - centered and responsive */
+        .login-container {
+            background: rgba(25, 25, 35, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            transition: all 0.5s ease;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .login-container.hidden {
+            opacity: 0;
+            transform: translateY(-50px);
+            pointer-events: none;
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+        }
+        
+        .login-header {
+            margin-bottom: 25px;
+        }
+        
+        .login-icon {
+            font-size: 60px;
+            color: #4e9af1;
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(78, 154, 241, 0.7);
+        }
+        
+        .login-title {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        
+        .login-subtitle {
+            color: #a0c4ff;
+            font-size: 1rem;
+            margin-bottom: 25px;
+        }
+        
+        .login-form {
+            margin-bottom: 20px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #90caf9;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            background: rgba(20, 20, 30, 0.7);
+            border: 1px solid rgba(100, 181, 246, 0.3);
+            border-radius: 10px;
+            font-size: 16px;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        
+        .password-input:focus {
+            border-color: #4e9af1;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(78, 154, 241, 0.3);
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #777;
+            font-size: 18px;
+        }
+        
+        .password-hint {
+            font-size: 13px;
+            color: #a0c4ff;
+            margin-top: 5px;
+            text-align: left;
+        }
+        
+        .login-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #4e9af1, #3a75c4);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            gap: 10px;
+            width: 100%;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(78, 154, 241, 0.3);
+        }
+        
+        .login-btn:hover {
+            background: linear-gradient(135deg, #3a75c4, #2a5a9c);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(78, 154, 241, 0.4);
+        }
+        
+        .error-popup {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-150%);
+            background: #dc3545;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            z-index: 20;
+            transition: transform 0.5s ease;
+            display: flex;
+            align-items: center;
+            max-width: 90%;
+        }
+        
+        .error-popup.active {
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .error-icon {
+            font-size: 20px;
+            margin-right: 12px;
+        }
+        
+        .error-popup p {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        /* Main App Container - centered and responsive */
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(25, 25, 35, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.5s ease 0.2s;
+            position: relative;
+            z-index: 5;
+            margin: 0 auto;
+        }
+        
+        .container.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            color: #4e9af1;
+            text-shadow: 0 0 10px rgba(78, 154, 241, 0.5);
+        }
+        
+        .subtitle {
+            color: #a0c4ff;
+            font-size: 0.9rem;
+        }
+        
+        .security-badge {
+            display: inline-block;
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .input-section, .preview-section {
+            background: rgba(30, 30, 40, 0.8);
+            border-radius: 15px;
+            padding: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 18px;
+            color: #64b5f6;
+            font-size: 1.2rem;
+        }
+        
+        .input-group {
+            margin-bottom: 18px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #90caf9;
+        }
+        
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            background: rgba(20, 20, 30, 0.7);
+            border: 1px solid rgba(100, 181, 246, 0.3);
+            border-radius: 10px;
+            font-size: 15px;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="text"]:focus, textarea:focus {
+            border-color: #4e9af1;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(78, 154, 241, 0.3);
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+            /* Improved multiline experience */
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 18px;
+            margin: 6px 0;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            gap: 8px;
+            width: 100%;
+        }
+        
+        @media (min-width: 480px) {
+            .btn {
+                width: auto;
+            }
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4e9af1, #3a75c4);
+            color: white;
+            box-shadow: 0 4px 15px rgba(78, 154, 241, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #3a75c4, #2a5a9c);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(78, 154, 241, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #27ae60, #219653);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #c0392b, #a93226);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+        
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 18px;
+            gap: 8px;
+        }
+        
+        /* NEW: Card styles */
+        .dictionary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid rgba(100, 181, 246, 0.2);
+            border-radius: 10px;
+            background: rgba(15, 15, 25, 0.6);
+        }
+        
+        .dictionary-card {
+            background: rgba(40, 40, 60, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(100, 181, 246, 0.1);
+        }
+        
+        .dictionary-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(100, 181, 246, 0.4);
+        }
+        
+        .dictionary-card.editing {
+            border: 2px solid #4e9af1;
+            box-shadow: 0 0 15px rgba(78, 154, 241, 0.5);
+        }
+        
+        .card-content {
+            pointer-events: none;
+        }
+        
+        .card-delete {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(231, 76, 60, 0.2);
+            border: none;
+            color: #e74c3c;
+            border-radius: 5px;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            pointer-events: auto;
+        }
+        
+        .card-delete:hover {
+            background: rgba(231, 76, 60, 0.3);
+        }
+        
+        .card-topic {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: #64b5f6;
+        }
+        
+        .card-desc {
+            font-size: 0.9rem;
+            color: #a0c4ff;
+            margin-bottom: 8px;
+        }
+        
+        .card-examples {
+            font-size: 0.8rem;
+            color: #90caf9;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .empty-message {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 20px;
+            color: #a0c4ff;
+        }
+        
+        .entry-count {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #90caf9;
+            text-align: right;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1e2749, #2d3b5b);
+            padding: 22px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(100, 181, 246, 0.3);
+        }
+        
+        .modal-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 18px;
+            color: #64b5f6;
+            font-size: 1.2rem;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 18px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .filename-input, .password-input {
+            width: 100%;
+            padding: 10px;
+            background: rgba(20, 20, 30, 0.7);
+            border: 1px solid rgba(100, 181, 246, 0.3);
+            border-radius: 10px;
+            font-size: 15px;
+            color: #fff;
+            margin-bottom: 12px;
+        }
+        
+        .password-warning {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .password-strength {
+            height: 4px;
+            background: rgba(20, 20, 30, 0.7);
+            border-radius: 5px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+        
+        .strength-meter {
+            height: 100%;
+            width: 0;
+            background: #e74c3c;
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+        
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            margin: 18px 0;
+            padding: 12px;
+            background: rgba(30, 30, 40, 0.8);
+            border-radius: 10px;
+            border-left: 4px solid #4e9af1;
+            flex-wrap: wrap;
+        }
+        
+        .status-item {
+            text-align: center;
+            margin: 5px 8px;
+        }
+        
+        .status-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #4e9af1;
+        }
+        
+        .status-label {
+            font-size: 0.85rem;
+            color: #a0c4ff;
+        }
+        
+        .feature-list {
+            list-style: none;
+            margin: 18px 0;
+        }
+        
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-icon {
+            color: #4e9af1;
+            font-size: 1rem;
+        }
+        
+        .encryption-info {
+            background: rgba(30, 40, 60, 0.7);
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 18px;
+            border: 1px solid rgba(100, 181, 246, 0.2);
+            font-size: 0.9rem;
+        }
+        
+        .encryption-info h3 {
+            color: #64b5f6;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(231, 76, 60, 0.3);
+        }
+        
+        /* Security pattern overlay */
+        .security-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(10, 25, 47, 0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(10, 25, 47, 0.2) 1px, transparent 1px);
+            background-size: 30px 30px;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+                align-items: center;
+            }
+            
+            .login-container {
+                padding: 25px 20px;
+                margin-top: 20px;
+            }
+            
+            .login-icon {
+                font-size: 50px;
+            }
+            
+            .login-title {
+                font-size: 1.8rem;
+            }
+            
+            .login-subtitle {
+                font-size: 0.95rem;
+            }
+            
+            .status-bar {
+                justify-content: center;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .button-group .btn {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+            
+            .login-title {
+                font-size: 1.6rem;
+            }
+            
+            .login-icon {
+                font-size: 45px;
+            }
+            
+            .status-value {
+                font-size: 1.1rem;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .input-section, .preview-section {
+                padding: 15px;
+            }
+            
+            .section-title {
+                font-size: 1.1rem;
+            }
+            
+            .modal-content {
+                padding: 18px;
+            }
+            
+            .dictionary-cards {
+                max-height: 200px;
+            }
+        }
+        
+        /* Animation for notifications */
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        /* Multiline helper hint */
+        .multiline-hint {
+            color: #a0c4ff;
+            font-size: 12px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Security pattern -->
+    <div class="security-pattern"></div>
+    
+    <!-- Login Container - Centered and Responsive -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-header">
+            <div class="login-icon">
+                <i class="fas fa-lock"></i>
+            </div>
+            <h2 class="login-title">Secure Dictionary Builder</h2>
+            <p class="login-subtitle">Enter encrypted password to access the system</p>
+        </div>
+        
+        <div class="login-form">
+            <div class="input-group">
+                <label for="loginPassword" class="input-label">Encrypted Password:</label>
+                <div class="password-container">
+                    <input type="password" id="loginPassword" class="password-input" placeholder="Paste encrypted password">
+                    <button class="toggle-password" id="toggleLoginPassword">👁️</button>
+                </div>
+                
+            </div>
+            
+            <button id="loginBtn" class="login-btn">
+                <i class="fas fa-unlock"></i> Unlock System
+            </button>
+        </div>
+        
+        <div class="encryption-info">
+            <h3><i class="fas fa-key"></i> Security Information</h3>
+            <p>This system uses military-grade encryption. Your password is verified client-side for maximum security.</p>
+        </div>
+    </div>
+    
+    <!-- Error popup -->
+    <div class="error-popup" id="errorPopup">
+        <div class="error-icon">❌</div>
+        <p>Invalid encrypted password! Please try again.</p>
+    </div>
+    
+    <!-- Main App Container - Centered and Responsive -->
+    <div class="container" id="mainApp">
+        <button class="logout-btn" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+        
+        <header>
+            <h1><i class="fas fa-book"></i> Secure Dictionary Builder</h1>
+            <p class="subtitle">Create encrypted dictionaries with military-grade security</p>
+            <div class="security-badge">
+                <i class="fas fa-shield-alt"></i> AES-256 Encryption
+            </div>
+        </header>
+        
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-value" id="entryCount">0</div>
+                <div class="status-label">Entries</div>
+            </div>
+            <div class="status-item">
+                <div class="status-value" id="exampleCount">0</div>
+                <div class="status-label">Examples</div>
+            </div>
+            <div class="status-item">
+                <div class="status-value">AES-256</div>
+                <div class="status-label">Encryption</div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <h2 class="section-title"><i class="fas fa-edit"></i> Create Dictionary Entry</h2>
+                
+                <div class="input-group">
+                    <label for="topic"><i class="fas fa-tag"></i> Topic:</label>
+                    <input type="text" id="topic" placeholder="Enter topic name (e.g., Phonics, Vowels)">
+                </div>
+                
+                <div class="input-group">
+                    <label for="desc"><i class="fas fa-align-left"></i> Description:</label>
+                    <textarea id="desc" placeholder="Enter description text (press Enter for new line)"></textarea>
+                    <div class="multiline-hint">
+                        <i class="fas fa-info-circle"></i> Press Enter for new lines, Ctrl+Enter to submit
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="ex"><i class="fas fa-list"></i> Examples (comma separated):</label>
+                    <input type="text" id="ex" placeholder="Enter examples (e.g., cat, bat, rat)">
+                </div>
+                
+                <div class="button-group">
+                    <button id="addBtn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Entry
+                    </button>
+                    <button id="clearFormBtn" class="btn btn-danger">
+                        <i class="fas fa-times"></i> Clear Form
+                    </button>
+                </div>
+                
+                <div class="encryption-info">
+                    <h3><i class="fas fa-key"></i> Security Features</h3>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check feature-icon"></i> Military-grade AES-256 encryption</li>
+                        <li><i class="fas fa-check feature-icon"></i> 100,000 PBKDF2 iterations for key derivation</li>
+                        <li><i class="fas fa-check feature-icon"></i> Unique salt and IV per encryption</li>
+                        <li><i class="fas fa-check feature-icon"></i> Authenticated encryption with AES-GCM</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="preview-section">
+                <h2 class="section-title"><i class="fas fa-eye"></i> Dictionary Entries</h2>
+                
+                <div class="dictionary-cards" id="preview">
+                    <div class="empty-message">No entries yet. Start by adding your first dictionary entry.</div>
+                </div>
+                <div class="entry-count" id="fullEntryCount">0 entries in dictionary</div>
+                
+                <div class="button-group">
+                    <button id="exportBtn" class="btn btn-secondary">
+                        <i class="fas fa-file-export"></i> Export Encrypted JSON
+                    </button>
+                    <button id="clearBtn" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Clear All
+                    </button>
+                </div>
+                
+                <div class="encryption-info">
+                    <h3><i class="fas fa-info-circle"></i> Export Instructions</h3>
+                    <p>When exporting, you'll set a password to encrypt your dictionary. Users will need this password to access the content.</p>
+                    <p><strong>Important:</strong> Store the password securely as it cannot be recovered!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div class="modal" id="exportModal">
+        <div class="modal-content">
+            <h2 class="modal-title"><i class="fas fa-file-export"></i> Export Encrypted Dictionary</h2>
+            
+            <div class="input-group">
+                <label for="filename">File name:</label>
+                <input type="text" id="filename" class="filename-input" placeholder="Enter filename">
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Encryption Password:</label>
+                <input type="password" id="password" class="password-input" placeholder="Enter strong password">
+                <div class="password-strength">
+                    <div class="strength-meter" id="strengthMeter"></div>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label for="confirmPassword">Confirm Password:</label>
+                <input type="password" id="confirmPassword" class="password-input" placeholder="Confirm your password">
+                <div class="password-warning" id="passwordWarning">Passwords do not match!</div>
+            </div>
+            
+            <div class="modal-actions">
+                <button id="cancelExport" class="btn btn-danger"><i class="fas fa-times"></i> Cancel</button>
+                <button id="confirmExport" class="btn btn-secondary"><i class="fas fa-lock"></i> Encrypt & Export</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Hardcoded token (this would be the expected password)
+        const TOKEN = "12345678";
+        
+        // DOM elements for login
+        const loginContainer = document.getElementById('loginContainer');
+        const mainApp = document.getElementById('mainApp');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginPasswordInput = document.getElementById('loginPassword');
+        const toggleLoginPassword = document.getElementById('toggleLoginPassword');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const errorPopup = document.getElementById('errorPopup');
+        
+        // Login functionality
+        loginBtn.addEventListener('click', async () => {
+            const encryptedPassword = loginPasswordInput.value.trim();
+            
+            if (!encryptedPassword) {
+                showError("Please enter an encrypted password");
+                return;
+            }
+            
+            // Validate the format (should contain a colon)
+            if (!encryptedPassword.includes(':')) {
+                showError("Invalid format. Should be salt:derivedHex");
+                return;
+            }
+            
+            // Show loading state
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+            loginBtn.disabled = true;
+            
+            try {
+                // Split the encrypted password into salt and derivedHex
+                const [salt, storedDerivedHex] = encryptedPassword.split(':');
+                
+                // Verify against our token
+                const isValid = await verifyPassword(TOKEN, salt, storedDerivedHex);
+                
+                if (isValid) {
+                    // Successful login
+                    setTimeout(() => {
+                        loginContainer.classList.add('hidden');
+                        mainApp.classList.add('active');
+                    }, 500);
+                } else {
+                    showError("Password verification failed");
+                }
+            } catch (error) {
+                console.error('Verification error:', error);
+                showError("Error during verification");
+            } finally {
+                // Reset login button
+                loginBtn.innerHTML = '<i class="fas fa-unlock"></i> Unlock System';
+                loginBtn.disabled = false;
+            }
+        });
+        
+        // Toggle password visibility
+        let loginPasswordVisible = false;
+        toggleLoginPassword.addEventListener('click', () => {
+            loginPasswordVisible = !loginPasswordVisible;
+            loginPasswordInput.type = loginPasswordVisible ? 'text' : 'password';
+            toggleLoginPassword.textContent = loginPasswordVisible ? '🔒' : '👁️';
+        });
+        
+        // Logout functionality
+        logoutBtn.addEventListener('click', () => {
+            mainApp.classList.remove('active');
+            loginContainer.classList.remove('hidden');
+            loginPasswordInput.value = '';
+        });
+        
+        // Show error popup
+        function showError(message) {
+            if (errorPopup.querySelector('p')) {
+                errorPopup.querySelector('p').textContent = message;
+            }
+            
+            errorPopup.classList.add('active');
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                errorPopup.classList.remove('active');
+            }, 3000);
+        }
+        
+        // Verify password using PBKDF2 - FIXED IMPLEMENTATION
+        async function verifyPassword(password, salt, storedDerivedHex) {
+            try {
+                // Encode password and salt
+                const encoder = new TextEncoder();
+                const passwordBuffer = encoder.encode(password);
+                const saltBuffer = encoder.encode(salt);
+                
+                // Import the password as a key
+                const baseKey = await window.crypto.subtle.importKey(
+                    'raw',
+                    passwordBuffer,
+                    'PBKDF2',
+                    false,
+                    ['deriveBits']
+                );
+                
+                // Derive key using PBKDF2
+                const derivedBits = await window.crypto.subtle.deriveBits(
+                    {
+                        name: 'PBKDF2',
+                        salt: saltBuffer,
+                        iterations: 100000,
+                        hash: 'SHA-256'
+                    },
+                    baseKey,
+                    256 // 256 bits = 32 bytes
+                );
+                
+                // Convert to hexadecimal
+                const derivedArray = Array.from(new Uint8Array(derivedBits));
+                const derivedHex = derivedArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                
+                // Compare with the stored derivedHex
+                return derivedHex === storedDerivedHex;
+            } catch (error) {
+                console.error('Verification error:', error);
+                return false;
+            }
+        }
+        
+        // Initialize dictionary
+        let dictionary = {};
+        let exampleCounter = 0;
+        let editingTopic = null;
+        
+        // DOM elements for main app
+        const topicInput = document.getElementById('topic');
+        const descInput = document.getElementById('desc');
+        const exInput = document.getElementById('ex');
+        const addBtn = document.getElementById('addBtn');
+        const clearFormBtn = document.getElementById('clearFormBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const preview = document.getElementById('preview');
+        const entryCountEl = document.getElementById('entryCount');
+        const fullEntryCount = document.getElementById('fullEntryCount');
+        const exampleCountEl = document.getElementById('exampleCount');
+        const exportModal = document.getElementById('exportModal');
+        const filenameInput = document.getElementById('filename');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const passwordWarning = document.getElementById('passwordWarning');
+        const cancelExport = document.getElementById('cancelExport');
+        const confirmExport = document.getElementById('confirmExport');
+        const strengthMeter = document.getElementById('strengthMeter');
+        
+        // Clear form function
+        function clearForm() {
+            topicInput.value = '';
+            descInput.value = '';
+            exInput.value = '';
+            editingTopic = null;
+        }
+        
+        // Update entry counters
+        function updateCounters() {
+            entryCountEl.textContent = Object.keys(dictionary).length;
+            fullEntryCount.textContent = `${Object.keys(dictionary).length} entries in dictionary`;
+        }
+        
+        // Render dictionary cards
+        function renderCards() {
+            const container = document.getElementById('preview');
+            container.innerHTML = '';
+            
+            if (Object.keys(dictionary).length === 0) {
+                container.innerHTML = '<div class="empty-message">No entries yet. Start by adding your first dictionary entry.</div>';
+                return;
+            }
+            
+            for (const [topic, data] of Object.entries(dictionary)) {
+                const card = document.createElement('div');
+                card.className = `dictionary-card ${editingTopic === topic ? 'editing' : ''}`;
+                card.innerHTML = `
+                    <div class="card-content">
+                        <h3 class="card-topic">${topic}</h3>
+                        <p class="card-desc">${data.desc.substring(0, 50)}${data.desc.length > 50 ? '...' : ''}</p>
+                        <p class="card-examples"><i class="fas fa-list"></i> ${data.ex.length} examples</p>
+                    </div>
+                    <button class="card-delete"><i class="fas fa-trash"></i></button>
+                `;
+                
+                // Add click event to the card (but not the delete button)
+                card.addEventListener('click', (e) => {
+                    if (!e.target.closest('.card-delete')) {
+                        // Load this topic for editing
+                        loadTopicForEditing(topic);
+                    }
+                });
+                
+                // Add event to delete button
+                const deleteBtn = card.querySelector('.card-delete');
+                deleteBtn.addEventListener('click', () => {
+                    deleteEntry(topic);
+                });
+                
+                container.appendChild(card);
+            }
+        }
+        
+        // Load topic into form for editing
+        function loadTopicForEditing(topic) {
+            editingTopic = topic;
+            topicInput.value = topic;
+            descInput.value = dictionary[topic].desc;
+            exInput.value = dictionary[topic].ex.join(', ');
+            
+            // Update card UI to show which one is being edited
+            renderCards();
+            
+            // Scroll to input section for better UX
+            document.querySelector('.input-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        // Delete a specific entry
+        function deleteEntry(topic) {
+            if (confirm(`Are you sure you want to delete the entry for "${topic}"?`)) {
+                // Update example counter
+                exampleCounter -= dictionary[topic].ex.length;
+                exampleCountEl.textContent = exampleCounter;
+                
+                // Remove from dictionary
+                delete dictionary[topic];
+                
+                // If we were editing this topic, clear the form
+                if (editingTopic === topic) {
+                    clearForm();
+                }
+                
+                // Update view
+                renderCards();
+                updateCounters();
+                showNotification('Entry deleted', 'success');
+            }
+        }
+        
+        // Add entry to dictionary
+        addBtn.addEventListener('click', () => {
+            const topic = topicInput.value.trim();
+            const desc = descInput.value.trim();
+            const ex = exInput.value.trim();
+            
+            if (!topic || !desc || !ex) {
+                showNotification('Please fill in all fields', 'error');
+                return;
+            }
+            
+            // If we're editing, remove the old entry first
+            if (editingTopic && editingTopic !== topic) {
+                // Remove the old entry if topic changed
+                exampleCounter -= dictionary[editingTopic].ex.length;
+                delete dictionary[editingTopic];
+            }
+            
+            // Create or update topic
+            const examples = ex.split(',').map(item => item.trim());
+            dictionary[topic] = {
+                desc: desc,
+                ex: examples
+            };
+            
+            // Update counters
+            exampleCounter += examples.length;
+            if (editingTopic && editingTopic !== topic) {
+                // Subtract the old examples if topic changed
+                exampleCounter -= dictionary[editingTopic]?.ex.length || 0;
+            }
+            exampleCountEl.textContent = exampleCounter;
+            
+            // Update preview
+            renderCards();
+            updateCounters();
+            
+            // Clear form and reset editing state
+            clearForm();
+            
+            showNotification(editingTopic ? 'Entry updated successfully!' : 'Entry added successfully!', 'success');
+        });
+        
+        // Clear form button
+        clearFormBtn.addEventListener('click', () => {
+            clearForm();
+            showNotification('Form cleared', 'info');
+        });
+        
+        // Show export modal
+        exportBtn.addEventListener('click', () => {
+            if (Object.keys(dictionary).length === 0) {
+                showNotification('No entries to export', 'error');
+                return;
+            }
+            
+            // Set default filename with current date
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            filenameInput.value = `dictionary_${dateStr}.json`;
+            
+            // Reset password fields
+            passwordInput.value = '';
+            confirmPasswordInput.value = '';
+            passwordWarning.style.display = 'none';
+            strengthMeter.style.width = '0%';
+            
+            exportModal.style.display = 'flex';
+            filenameInput.focus();
+        });
+        
+        // Password strength indicator
+        passwordInput.addEventListener('input', () => {
+            const password = passwordInput.value;
+            let strength = 0;
+            
+            if (password.length >= 8) strength += 25;
+            if (password.length >= 12) strength += 25;
+            if (/[A-Z]/.test(password)) strength += 25;
+            if (/[0-9]/.test(password)) strength += 15;
+            if (/[^A-Za-z0-9]/.test(password)) strength += 10;
+            
+            strength = Math.min(strength, 100);
+            strengthMeter.style.width = `${strength}%`;
+            
+            // Update color based on strength
+            if (strength < 40) {
+                strengthMeter.style.backgroundColor = '#e74c3c';
+            } else if (strength < 70) {
+                strengthMeter.style.backgroundColor = '#f39c12';
+            } else {
+                strengthMeter.style.backgroundColor = '#2ecc71';
+            }
+        });
+        
+        // Handle export confirmation
+        confirmExport.addEventListener('click', async () => {
+            const filename = filenameInput.value.trim();
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            
+            if (!filename) {
+                showNotification('Please enter a filename', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                passwordWarning.style.display = 'block';
+                return;
+            }
+            
+            if (password.length < 8) {
+                showNotification('Password must be at least 8 characters', 'error');
+                return;
+            }
+            
+            passwordWarning.style.display = 'none';
+            
+            try {
+                await exportDictionary(filename, password);
+                exportModal.style.display = 'none';
+                showNotification('Dictionary encrypted and exported successfully!', 'success');
+            } catch (error) {
+                showNotification(`Encryption failed: ${error.message}`, 'error');
+            }
+        });
+        
+        // Cancel export
+        cancelExport.addEventListener('click', () => {
+            exportModal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside
+        exportModal.addEventListener('click', (e) => {
+            if (e.target === exportModal) {
+                exportModal.style.display = 'none';
+            }
+        });
+        
+        // Export as encrypted JSON file
+        async function exportDictionary(filename, password) {
+            const jsonStr = JSON.stringify(dictionary, null, 2);
+            
+            // Generate random salt
+            const salt = crypto.getRandomValues(new Uint8Array(16));
+            
+            // Derive key from password
+            const baseKey = await crypto.subtle.importKey(
+                "raw",
+                new TextEncoder().encode(password),
+                "PBKDF2",
+                false,
+                ["deriveBits", "deriveKey"]
+            );
+            
+            // Derive encryption key
+            const key = await crypto.subtle.deriveKey(
+                {
+                    name: "PBKDF2",
+                    salt: salt,
+                    iterations: 100000,
+                    hash: "SHA-256"
+                },
+                baseKey,
+                { name: "AES-GCM", length: 256 },
+                false,
+                ["encrypt"]
+            );
+            
+            // Generate random IV
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            
+            // Encrypt data
+            const encryptedData = await crypto.subtle.encrypt(
+                {
+                    name: "AES-GCM",
+                    iv: iv
+                },
+                key,
+                new TextEncoder().encode(jsonStr)
+            );
+            
+            // Create encrypted payload
+            const encryptedPayload = {
+                salt: Array.from(salt),
+                iv: Array.from(iv),
+                ciphertext: Array.from(new Uint8Array(encryptedData))
+            };
+            
+            // Create blob and download
+            const blob = new Blob([JSON.stringify(encryptedPayload)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Clear all entries
+        clearBtn.addEventListener('click', () => {
+            if (Object.keys(dictionary).length === 0) {
+                showNotification('Dictionary is already empty', 'info');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to clear all entries? This cannot be undone.')) {
+                dictionary = {};
+                exampleCounter = 0;
+                exampleCountEl.textContent = '0';
+                clearForm();
+                renderCards();
+                updateCounters();
+                showNotification('All entries cleared', 'success');
+            }
+        });
+        
+        // Show notification
+        function showNotification(message, type) {
+            // Remove existing notifications
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 25px;
+                border-radius: 10px;
+                background: ${type === 'error' ? '#e74c3c' : type === 'success' ? '#2ecc71' : '#3498db'};
+                color: white;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out, fadeOut 0.5s ease-in 3s forwards;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 0.5s ease-in forwards';
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        }
+        
+        // Handle multiline input in description field
+        descInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey) {
+                // Allow default behavior (new line) for Enter key
+                return;
+            }
+            
+            // Submit form with Ctrl+Enter
+            if ((e.key === 'Enter' && (e.ctrlKey || e.metaKey)) || e.key === 'Tab') {
+                e.preventDefault();
+                addBtn.click();
+            }
+        });
+        
+        // Allow pressing Enter in inputs to add entry (except description)
+        [topicInput, exInput].forEach(input => {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addBtn.click();
+                }
+            });
+        });
+        
+        // Allow pressing Enter in filename input to confirm export
+        [filenameInput, passwordInput, confirmPasswordInput].forEach(input => {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    confirmExport.click();
+                }
+            });
+        });
+        
+        // Initialize
+        renderCards();
+        updateCounters();
+    </script>
+</body>
+</html>
