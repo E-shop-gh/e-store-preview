@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funeral Program - Matthew B. Eshun</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: #0d1c30;
+            color: #fff;
+            line-height: 1.6;
+            padding: 10px;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+        .navigation {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            background: rgba(26, 42, 68, 0.9);
+            border: 2px solid #d4a017;
+            border-radius: 50px;
+            padding: 8px 15px;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: #d4a017;
+            font-size: 1.2em;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        .nav-btn:hover {
+            background: rgba(212, 160, 23, 0.2);
+        }
+        .download-btn {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: #d4a017;
+            color: #0d1c30;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5em;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+        .download-btn:hover {
+            transform: scale(1.1);
+        }
+        .page {
+            background: #1a2a44;
+            border: 2px solid #d4a017;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        .cover {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(to bottom, #0a1c2e, #1a2a44);
+            border: 2px solid #d4a017;
+            border-radius: 10px;
+            position: relative;
+        }
+        .cover h1 {
+            font-size: 2.2em;
+            color: #d4a017;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-family: 'Times New Roman', serif;
+        }
+        .profile-image {
+            width: 200px;
+            height: 250px;
+            margin: 15px auto;
+            border-radius: 5px;
+            border: 3px solid #d4a017;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+        }
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .profile-image:hover img {
+            transform: scale(1.05);
+        }
+        .cover .name {
+            font-size: 1.8em;
+            margin: 15px 0;
+            color: #fff;
+            font-weight: bold;
+        }
+        .cover .dates {
+            font-size: 1.2em;
+            color: #d4a017;
+            margin-bottom: 20px;
+        }
+        .location {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(212, 160, 23, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #d4a017;
+        }
+        .location h3 {
+            color: #d4a017;
+            margin-bottom: 10px;
+        }
+        .contact-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(212, 160, 23, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #d4a017;
+        }
+        .contact-info h3 {
+            color: #d4a017;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .contact-details {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(26, 42, 68, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            width: 200px;
+            transition: transform 0.3s ease;
+        }
+        .contact-item:hover {
+            transform: translateY(-5px);
+        }
+        .contact-icon {
+            font-size: 2em;
+            color: #d4a017;
+            margin-bottom: 10px;
+        }
+        .contact-text {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .contact-number {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #fff;
+            background: rgba(212, 160, 23, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin-top: 5px;
+        }
+        .section-title {
+            font-size: 1.4em;
+            color: #d4a017;
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: #d4a017;
+        }
+        .content {
+            margin: 15px 0;
+            text-align: justify;
+            font-size: 1.05em;
+        }
+        .content p {
+            margin-bottom: 15px;
+        }
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .gallery-item {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 10px;
+            transition: transform 0.3s ease;
+        }
+        .gallery-item:hover {
+            transform: translateY(-5px);
+        }
+        .gallery-img {
+            width: 100%;
+            height: 150px;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 2px solid #d4a017;
+            cursor: pointer;
+        }
+        .gallery-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .gallery-img:hover img {
+            transform: scale(1.1);
+        }
+        .gallery-item .name {
+            margin-top: 8px;
+            font-size: 0.9em;
+            color: #d4a017;
+            font-weight: bold;
+        }
+        .song {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(212, 160, 23, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid #d4a017;
+            position: relative;
+        }
+        .song-title {
+            color: #d4a017;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        .song-content {
+            white-space: pre-line;
+            line-height: 1.8;
+            text-align: center;
+        }
+        .appreciation {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(212, 160, 23, 0.05);
+            border-radius: 8px;
+            position: relative;
+        }
+        .appreciation p {
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.9em;
+            color: #d4a017;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(212, 160, 23, 0.3);
+        }
+        /* Audio Play Button */
+        .audio-play-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            background: rgba(212, 160, 23, 0.2);
+            border: 2px solid #d4a017;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 5;
+        }
+        .audio-play-btn:hover {
+            background: rgba(212, 160, 23, 0.4);
+            transform: scale(1.1);
+        }
+        .audio-play-btn i {
+            color: #d4a017;
+            font-size: 1.2em;
+        }
+        /* Enlarged Image Overlay */
+        .enlarged-image {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .enlarged-image img {
+            max-width: 90%;
+            max-height: 80%;
+            object-fit: contain;
+            border: 2px solid #d4a017;
+            border-radius: 5px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.8);
+        }
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 2.5em;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .close-btn:hover {
+            color: #d4a017;
+        }
+        .image-caption {
+            color: #fff;
+            margin-top: 15px;
+            font-size: 1.2em;
+            text-align: center;
+            max-width: 80%;
+        }
+        /* Candle Light Effect */
+        .candle-light {
+            position: absolute;
+            width: 12px;
+            height: 25px;
+            background: #ffd700;
+            border-radius: 50% 50% 20% 20%;
+            top: 15px;
+            left: 15px;
+            filter: blur(2px);
+            animation: flicker 1.5s infinite alternate;
+            box-shadow: 0 0 20px #ffd700, 0 0 40px #ff8c00;
+        }
+        @keyframes flicker {
+            0% { opacity: 0.6; height: 20px; }
+            25% { opacity: 0.8; height: 25px; }
+            50% { opacity: 0.7; height: 22px; }
+            75% { opacity: 0.9; height: 24px; }
+            100% { opacity: 0.6; height: 20px; }
+        }
+        /* Download notification */
+        .download-notification {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(1000px);
+            background: rgba(212, 160, 23, 0.9);
+            color: #0d1c30;
+            padding: 16px 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.5s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+        }
+        .download-notification.show {
+            transform: translateX(-50%) translateY(0);
+        }
+        .download-notification i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+                padding: 0;
+            }
+            .page {
+                border: 1px solid #000;
+                box-shadow: none;
+                background: white;
+                page-break-inside: avoid;
+            }
+            .cover {
+                background: white;
+                border: 1px solid #000;
+            }
+            .cover h1, .cover .name, .cover .dates, .section-title {
+                color: #000;
+            }
+            .navigation, .download-btn, .audio-play-btn {
+                display: none;
+            }
+            .candle-light {
+                display: none;
+            }
+            .enlarged-image {
+                display: none !important;
+            }
+            .contact-item {
+                border: 1px solid #000;
+            }
+        }
+        @media (min-width: 768px) {
+            .cover h1 {
+                font-size: 2.8em;
+            }
+            .cover .name {
+                font-size: 2.2em;
+            }
+            .cover .dates {
+                font-size: 1.5em;
+            }
+            .profile-image {
+                width: 250px;
+                height: 300px;
+            }
+            .section-title {
+                font-size: 1.8em;
+            }
+            .content {
+                font-size: 1.1em;
+            }
+            .image-gallery {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+            .gallery-img {
+                height: 180px;
+            }
+        }
+        @media (max-width: 480px) {
+            .navigation {
+                bottom: 10px;
+                padding: 5px 10px;
+            }
+            .nav-btn {
+                padding: 5px 10px;
+                font-size: 1em;
+            }
+            .download-btn {
+                top: 10px;
+                right: 10px;
+                width: 40px;
+                height: 40px;
+                font-size: 1.2em;
+            }
+            .contact-details {
+                flex-direction: column;
+                align-items: center;
+            }
+            .contact-item {
+                width: 100%;
+                max-width: 250px;
+            }
+            .audio-play-btn {
+                top: 10px;
+                right: 10px;
+                width: 35px;
+                height: 35px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Download Button -->
+    <button class="download-btn" id="downloadPdfBtn">
+        <i class="fas fa-download"></i>
+    </button>
+
+    <!-- Download Notification -->
+    <div class="download-notification" id="downloadNotification">
+        <i class="fas fa-check-circle"></i>
+        <span>Downloading biography.pdf...</span>
+    </div>
+
+    <!-- Navigation -->
+    <div class="navigation">
+        <button class="nav-btn" onclick="navigateTo('cover')"><i class="fas fa-home"></i></button>
+        <button class="nav-btn" onclick="navigateTo('programme')"><i class="fas fa-list"></i></button>
+        <button class="nav-btn" onclick="navigateTo('biography')"><i class="fas fa-book"></i></button>
+        <button class="nav-btn" onclick="navigateTo('gallery')"><i class="fas fa-images"></i></button>
+        <button class="nav-btn" onclick="navigateTo('songs')"><i class="fas fa-music"></i></button>
+        <button class="nav-btn" onclick="navigateTo('appreciation')"><i class="fas fa-handshake"></i></button>
+    </div>
+
+    <!-- Page 1 - Cover -->
+    <div class="page" id="cover">
+        <div class="cover">
+            <h1>FUNERAL PROGRAM</h1>
+            <div class="profile-image" onclick="enlargeImage(this, 'Matthew B. Eshun (1949-2025)')">
+                <img src="man.jpg" alt="Matthew B. Eshun">
+            </div>
+            <div class="name">MATTHEW B. ESHUN</div>
+            <div class="dates">1949 – 2025</div>
+            
+            <div class="location">
+                <h3><i class="fas fa-map-marker-alt"></i> Funeral Location</h3>
+                <p>Kingdom Hall of Jehovah's Witnesses<br>
+                Airport Residential Area, Accra, Ghana<br>
+                Saturday, August 30, 2025 at 9:00 AM</p>
+            </div>
+            
+            <div class="contact-info">
+                <h3><i class="fas fa-info-circle"></i> Contact & Support</h3>
+                <div class="contact-details">
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-text">RSVP Contact</div>
+                        <div class="contact-number">+233545800158</div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-hand-holding-heart"></i>
+                        </div>
+                        <div class="contact-text">Financial Support</div>
+                        <div class="contact-number">+233545800158</div>
+                        <div class="contact-text">MTN Mobile Money</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="candle-light"></div>
+        </div>
+    </div>
+
+    <!-- Page 2 - Programme and Biography -->
+    <div class="page" id="programme">
+        <div class="section-title">Programme</div>
+        <div class="content">
+            <p><strong>7:00 AM</strong> ............ Arrival of body</p>
+            <p><strong>8:30 AM</strong> ........ File past</p>
+            <p><strong>9:55 AM</strong> ........ Song 151 and Opening Prayer</p>
+            <p><strong>10:00 AM</strong> ...... Funeral Discourse</p>
+            <p><strong>10:30 AM</strong> ...... Song 139 and Closing Prayer</p>
+            <p><strong>11:00 AM</strong> ...... Burial follows at the Osu Cemetery</p>
+            <p><strong>Speaker:</strong> George Owusu Sarkodie</p>
+            <p><strong>Chairman:</strong> Daniel Obeng</p>
+        </div>
+    </div>
+
+    <!-- Page 3 - Biography -->
+    <div class="page" id="biography">
+        <div class="section-title">Biography</div>
+        <div class="audio-play-btn" onclick="playAudio('biography6.mp3', this)">
+            <i class="fas fa-play"></i>
+        </div>
+        <div class="content">
+            <p>Matthew Bartholomew Eshun was born on February 6, 1949, to the late Jacob Kofi Mbroh Eshun and Dora Aba Eduawa Appiah, both from Ekumfi Abor (Abodo). As the sixth born among 14 siblings, he was known for his boldness, care, profound wisdom, outspokenness and unwavering love for his family, friends and his faith.</p>
+            
+            <p>He begun his basic education at Akumfi Abor M/A Primary and Middle School. He furthered his studies at Arthurs School of Draughtsmanship and Surveying in Agona Swedru. Upon completion, he migrated to Accra to live with his beloved late aunty Mercy Kudjo as he pursued for job.</p>
+            
+            <p>He first worked at Public Works Department (PWD). Then moved to Cocoa Research Institute in Tafo, Bole in the Northern Region and Akim Afosu before setting up his professional business as a draughtsman and surveyor.</p>
+            
+            <p>His passion for education and curiosity lead him to the Bible truth. On 7th June, 1974 he symbolized his dedication to Jehovah through water baptism in Accra.</p>
+            
+            <p>Matthew B. Eshun was united in marriage with Grace Araba Kwarkyi. M.B. and Grace were blessed with seven children, four in-laws and twelve grandchildren.</p>
+            
+            <p>He later became an entrepreneur to further Kingdom interest. He actively supported his congregation as a temporary pioneer now known as auxiliary pioneer where he became well-known and beloved.</p>
+            
+            <p>Six months after his baptism, in 1975, he began serving as a regular pioneer and because of his enthusiasm and zeal for the kingdom work, he had the privilege to work with special pioneers, Joseph Akoto and Nathaniel Gbedemah, who were his close associates.</p>
+            
+            <p>He was a familiar sight in the neighborhood – joyfully riding his motorcycle from place to place as he engaged in the preaching work that brought him so much fulfillment.</p>
+            
+            <p>His zeal for the ministry was evident as a congregation elder, serving various congregations in Bole, Tafo, Afosu, Bubiashie, Teshie Twi, Airport View Twi and East Airport View Twi.</p>
+            
+            <p>He was deeply loved by family, friends and publishers. He was known for his shepherding visits, where he offered heartfelt encouragement and spiritual guidance. He was selfless, humble, hardworking and very empathetic towards people. He always gave a listening ear to everyone who needed his attention whether in the family or the congregation.</p>
+            
+            <p>He helped many brothers and sisters deepen their love for the field ministry, often motivating them to pursue the full-time ministry. Thus, many had the pioneering privilege including five (5) of his children due to his influence. Even in his old age, he remained an active regular pioneer, enthusiastically sharing the good news electronically. He fulfilled a faithful service for 51 years.</p>
+            
+            <p>After battling illness for four (4) years, M.B. Eshun fell asleep in death on July, 24, 2025. Though his absence leaves a great void, our hearts find comfort in knowing that he now rests in Jehovah's perfect memory, awaiting the promised resurrection.</p>
+            
+            <p>He was a shepherd, a teacher, a pioneer, a faithful husband, a devoted father and grandfather, a good friend and above all, a loyal servant of Jehovah. He will be dearly missed and fondly remembered.</p>
+        </div>
+    </div>
+
+    <!-- Page 4 - Tribute Continued -->
+    <div class="page">
+        <div class="section-title">Tribute From Wife</div>
+        <div class="audio-play-btn" onclick="playAudio('ttwife.mp3', this)">
+            <i class="fas fa-play"></i>
+        </div>
+        <div class="content">
+            <p>
+Today, we gather to celebrate the life of my beloved husband, Matthew Eshun. Your passing leaves a void in my life, our family, and the community.</p>
+
+<p>Matthew, you were a pillar of strength, a loving father, and a devoted husband. Your kindness, generosity, and compassion touched countless lives.</p>
+
+<p>I'll cherish memories of our laughter, adventures, and quiet moments together. Your legacy will live on through our children, family, and friends.</p>
+
+<p>Rest in peace, my love. May your soul find eternal peace and joy. You will be deeply missed, but never forgotten.</p>
+        </div>
+    </div>
+
+    <!-- Page 5 - Tribute Continued -->
+    <div class="page">
+        <div class="section-title">Tribute From Children</div>
+        <div class="audio-play-btn" onclick="playAudio('ttchild.mp3', this)">
+            <i class="fas fa-play"></i>
+        </div>
+        <div class="content">
+            <p>
+Dad, you were our rock, our guiding light, and our biggest supporter. We'll miss your warm hugs, your encouraging words, and your infectious smile.</p>
+
+<p>Your legacy lives on in us – your values, your love, and your wisdom. We'll strive to make you proud and keep your memory close to our hearts.</p>
+
+<p>Thank you for being the best dad ever. We love you and will miss you forever. Rest in peace, Dad.</p>
+        </div>
+    </div>
+
+    <!-- Page 6 - Picture Gallery -->
+    <div class="page" id="gallery">
+        <div class="section-title">Picture Gallery</div>
+        <div class="image-gallery">
+            <div class="gallery-item">
+                <div class="gallery-img" onclick="enlargeImage(this, 'Matthew in his younger days')">
+                    <img src="tt1.jpg">
+                </div>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-img" onclick="enlargeImage(this, 'Matthew with his family')">
+                    <img src="tt2.jpg" alt="Matthew with his family">
+                </div>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-img" onclick="enlargeImage(this, 'Matthew as a pioneer')">
+                    <img src="tt3.jpg" alt="Matthew as a pioneer">
+                </div>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-img" onclick="enlargeImage(this, 'Matthew with his grandchildren')">
+                    <img src="tt4.jpg" alt="Matthew with his grandchildren">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 7 - Children Gallery -->
+    <div class="page">
+        <div class="section-title">Children</div>
+        <div class="image-gallery">
+            <div class="gallery-item">
+                <div class="gallery-img" onclick="enlargeImage(this, 'Regina Eshun')">
+                    <img src="ch1.jpg" alt="Regina Eshun">
+                </div>
+                <div class="name">REGINA</div>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-img" onclick="enlargeImage(this, 'Francis Eshun')">
+                    <img src="ch2.jpg" alt="Francis Eshun">
+                </div>
+                <div class="name">FRANCIS</div>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-img" onclick="enlargeImage(this, 'Stephen Eshun')">
+                    <img src="ch3.jpg" alt="Stephen Eshun">
+                </div>
+                <div class="name">STEPHEN</div>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-img" onclick="enlargeImage(this, 'Eunice Eshun')">
+                    <img src="ch5.jpg" alt="Eunice Eshun">
+                </div>
+                <div class="name">EUNICE</div>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-img" onclick="enlargeImage(this, 'Abel Eshun')">
+                    <img src="ch4.jpg">
+                </div>
+                <div class="name">ABEL</div>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-img" onclick="enlargeImage(this, 'Rebecca Eshun')">
+                    <img src="ch7.jpg" alt="Rebecca Eshun">
+                </div>
+                <div class="name">REBECCA</div>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-img" onclick="enlargeImage(this, 'Nathaniel Eshun')">
+                    <img src="ch6.jpg" alt="Nathaniel Eshun">
+                </div>
+                <div class="name">NATHANIEL</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Page 7 - GrandChildren Gallery -->
+    <div class="page">
+        <div class="section-title">GrandChildren</div>
+        <div class="image-gallery">
+            <div class="gallery-item">
+                <div class="gallery-img" onclick="enlargeImage(this, 'Regina Eshun')">
+                    <img src="cch1.jpg" alt="Regina Eshun">
+                </div>
+                <div class="name">REGINA</div>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-img" onclick="enlargeImage(this, 'Francis Eshun')">
+                    <img src="cch2.jpg" alt="Francis Eshun">
+                </div>
+                <div class="name">FRANCIS</div>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-img" onclick="enlargeImage(this, 'Stephen Eshun')">
+                    <img src="cch3.jpg" alt="Stephen Eshun">
+                </div>
+                <div class="name">STEPHEN</div>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-img" onclick="enlargeImage(this, 'Eunice Eshun')">
+                    <img src="cch5.jpg" alt="Eunice Eshun">
+                </div>
+                <div class="name">EUNICE</div>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-img" onclick="enlargeImage(this, 'Abel Eshun')">
+                    <img src="cch4.jpg">
+                </div>
+                <div class="name">ABEL</div>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-img" onclick="enlargeImage(this, 'Rebecca Eshun')">
+                    <img src="cch7.jpg" alt="Rebecca Eshun">
+                </div>
+                <div class="name">REBECCA</div>
+            </div>
+            <div class="gallery-item">
+                <div class="gallery-img" onclick="enlargeImage(this, 'Nathaniel Eshun')">
+                    <img src="cch6.jpg" alt="Nathaniel Eshun">
+                </div>
+                <div class="name">NATHANIEL</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 8 - Songs -->
+    <div class="page" id="songs">
+        <div class="section-title">Song 151</div>
+        <div class="audio-play-btn" onclick="playAudio('151.mp3', this)">
+            <i class="fas fa-play"></i>
+        </div>
+        <div class="song">
+            <div class="song-title">Ɔbɛfrɛ (Hiob 14:13-15)</div>
+            <div class="song-content">
+                1. Yɛn nkwa te sɛ bo-su, ɛ-wɔ hɔ nnɛ,
+ Ɔ-kye-na na a-twam kɔ.
+ 
+Yɛ-yɛ dɔ-te, ɛn-kyɛ na yɛa-fi hɔ,
+ Ɛ-ma ye-di a-w’rɛ-how.
+ 
+ Sɛ ni-pa wu a, ɔ-bɛ-sɔ-re bio?
+ Mun-tie Nyan-ko-pɔn bɔ-hyɛ:
+ 
+ (NNYESO)
+ Ɔ-bɛ-frɛ, A-wu-fo bɛ-te.
+ Ɔ-bɛ-ma wɔn a-ba bio.
+ N’a-ni a-gyi-na ne mma;
+ Ɔ-pɛ sɛ o-hu wɔn bio.
+ Nya gyi-di sɛ ɛ-bɛ-yɛ hɔ,
+ Ye-be-hu a-wu-fo bio.
+ A-fei, ye-be-nya daa nkwa.
+ Na o-bia-ra ren-wu bio.
+ 
+ 2. Nyan-ko-pɔn nnam-fo be-tu-mi a-wu,
+ Nan-so ne w’rɛ mfi wɔn da.
+ 
+ A-wu-fo a Nyan-ko-pɔn kae wɔn no,
+ Ɔ-bɛ-ma wɔn a-ba bio.
+ 
+ Ɛn-na ye-be-nya a-se-te-na pa.Pa-ra-di-se no bɛ-ba.
+
+ (NNYESO)
+ Ɔ-bɛ-frɛ, A-wu-fo bɛ-te.
+ Ɔ-bɛ-ma wɔn a-ba bio.
+ N’a-ni a-gyi-na ne mma;
+ Ɔ-pɛ sɛ o-hu wɔn bio.
+ Nya gyi-di sɛ ɛ-bɛ-yɛ hɔ,
+ Ye-be-hu a-wu-fo bio.
+ A-fei, ye-be-nya daa nkwa.
+ Na o-bia-ra ren-wu bio.
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 9 - Songs Continued -->
+    <div class="page">
+        <div class="section-title">Song 139</div>
+        <div class="audio-play-btn" onclick="playAudio('139.mp3', this)">
+            <i class="fas fa-play"></i>
+        </div>
+        <div class="song">
+            <div class="song-title">Fa W'ani Bu Wiase Foforo No (Adiyisɛm 21:1-5)</div>
+            <div class="song-content">
+                1. Twa ho mfo-ni, fa w’a-ni bu,
+ Sɛ yɛn nyi-naa wɔ wia-se fo-f’ro mu.
+ 
+ Hwɛ a-ni-gye a ɛ-bɛ-yɛ;
+ Ye-be-nya yɛn ko-ma so a-de.
+ 
+ Ɔ-bɔ-ne-fo, bi re-mma hɔ;
+ O-nyan-ko-pɔn de, o-nni hua-mmɔ.
+ 
+ O hwɛ sɛ-nea Pa-ra-di-se bɛ-yɛ dɛ!
+ Yɛn nyi-naa bɛ-boma-to a-ye-yi dwom sɛ:
+ 
+ (NNYESO)
+ “Yɛ-wɔ a-ni-sɔ ma wo Ye-ho-wa!
+ Wo Ba no a-yɛ b’ri-bia-ra fo-f’ro.
+ Yɛ-de ko-ma mu a-ni-gye to dwom ma wo;
+ A-ye-yi ne a-nuo-nyam nka wo din no daa.”
+ 
+ 2. A-bɛ-brɛ-sɛ na a-bu so.
+ Wia-se bɔ-ne ma ye-di a-w’rɛ-how.
+ 
+ Nan-so ɛn-kyɛ, ɛ-bɛ-se-sa.
+ Ye-ho-wa beyi ɔ-haw nyi-naa.
+ 
+ Wa-hyɛ yɛn bɔ, ɛ-bɛ-ba mu;
+ Fa boa-se-tɔ twɛn wo Nyan-ko-pɔn.
+ 
+ O-be-nyan a-wu-fo a-ba nkwa mu bio;
+ Yɛ-ne wɔn bɛ-boma-to a-ye-yi dwom sɛ:
+ 
+ (NNYESO)
+ “Yɛ-wɔ a-ni-sɔ ma wo Ye-ho-wa!
+ Wo Ba no a-yɛ b’ri-bia-ra fo-f’ro.
+ Yɛ-de ko-ma mu a-ni-gye to dwom ma wo;
+ A-ye-yi ne a-nuo-nyam nka wo din no daa.”
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 10 - Appreciation -->
+    <div class="page" id="appreciation">
+        <div class="section-title">Appreciation</div>
+        <div class="appreciation">
+            <p>The family of Matthew Bartholomew Eshun wishes to express our heartfelt thanks and appreciation to all friends, relatives, and sympathizers who in diverse ways have shown us love and support during this time of bereavement.</p>
+            
+            <p>We are grateful for your prayers, visits, words of comfort, and all forms of support. May Jehovah bless your endeavors and reward you abundantly.</p>
+            
+            <p>Once again, Thank You!!!</p>
+            
+            <p><strong>The Eshun Family</strong></p>
+        </div>
+
+        <div class="contact-info">
+            <h3><i class="fas fa-info-circle"></i> Contact & Support</h3>
+            <div class="contact-details">
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="contact-text">RSVP Contact</div>
+                    <div class="contact-number">+233545800158</div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-hand-holding-heart"></i>
+                    </div>
+                    <div class="contact-text">Financial Support</div>
+                    <div class="contact-number">+233545800158</div>
+                    <div class="contact-text">MTN Mobile Money</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Designed by: Micknick Digital | 0545-800-158</p>
+            <p>In loving memory of Matthew B. Eshun (1949-2025)</p>
+        </div>
+    </div>
+
+    <!-- Enlarged Image Overlay -->
+    <div class="enlarged-image" id="enlargedImage">
+        <div class="close-btn" onclick="closeEnlargedImage()">
+            <i class="fas fa-times"></i>
+        </div>
+        <img src="" alt="" id="enlargedImg">
+        <div class="image-caption" id="imageCaption"></div>
+    </div>
+
+    <script>
+        // Image enlargement functionality
+        function enlargeImage(element, caption) {
+            const enlarged = document.getElementById('enlargedImage');
+            const enlargedImg = document.getElementById('enlargedImg');
+            const imageCaption = document.getElementById('imageCaption');
+            
+            // Get the image source from the clicked element
+            if (element.tagName === 'IMG') {
+                enlargedImg.src = element.src;
+            } else {
+                enlargedImg.src = element.querySelector('img').src;
+            }
+            
+            // Set the caption
+            imageCaption.textContent = caption || '';
+            
+            // Show the enlarged image
+            enlarged.style.display = 'flex';
+            
+            // Prevent body scrolling
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeEnlargedImage() {
+            const enlarged = document.getElementById('enlargedImage');
+            enlarged.style.display = 'none';
+            
+            // Re-enable body scrolling
+            document.body.style.overflow = 'auto';
+        }
+
+        // Navigation functionality
+        function navigateTo(section) {
+            let element;
+            
+            switch(section) {
+                case 'cover':
+                    element = document.getElementById('cover');
+                    break;
+                case 'programme':
+                    element = document.getElementById('programme');
+                    break;
+                case 'biography':
+                    element = document.getElementById('biography');
+                    break;
+                case 'gallery':
+                    element = document.getElementById('gallery');
+                    break;
+                case 'songs':
+                    element = document.getElementById('songs');
+                    break;
+                case 'appreciation':
+                    element = document.getElementById('appreciation');
+                    break;
+                default:
+                    element = document.getElementById('cover');
+            }
+            
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Audio playback functionality
+        let currentAudio = null;
+        let currentButton = null;
+        
+        function playAudio(songFile, buttonElement) {
+            // If the same audio is already playing, pause it
+            if (currentAudio && currentAudio.src.includes(songFile) && !currentAudio.paused) {
+                currentAudio.pause();
+                buttonElement.innerHTML = '<i class="fas fa-play"></i>';
+                return;
+            }
+            
+            // If a different audio is playing, pause it and reset its button
+            if (currentAudio && !currentAudio.paused && currentButton !== buttonElement) {
+                currentAudio.pause();
+                if (currentButton) {
+                    currentButton.innerHTML = '<i class="fas fa-play"></i>';
+                }
+            }
+            
+            // Create a new audio element if needed
+            if (!currentAudio || !currentAudio.src.includes(songFile)) {
+                // Remove existing audio element if any
+                if (currentAudio) {
+                    currentAudio.remove();
+                }
+                
+                // Create new audio element
+                currentAudio = new Audio(songFile);
+                
+                // Handle when audio ends
+                currentAudio.addEventListener('ended', function() {
+                    if (currentButton) {
+                        currentButton.innerHTML = '<i class="fas fa-play"></i>';
+                    }
+                    currentAudio = null;
+                    currentButton = null;
+                });
+                
+                // Handle audio errors
+                currentAudio.addEventListener('error', function() {
+                    alert('Failed to load audio file: ' + songFile);
+                    if (currentButton) {
+                        currentButton.innerHTML = '<i class="fas fa-play"></i>';
+                    }
+                    currentAudio = null;
+                    currentButton = null;
+                });
+            }
+            
+            // Play the audio
+            currentAudio.play()
+                .then(() => {
+                    // Update button appearance
+                    if (currentButton && currentButton !== buttonElement) {
+                        currentButton.innerHTML = '<i class="fas fa-play"></i>';
+                    }
+                    buttonElement.innerHTML = '<i class="fas fa-pause"></i>';
+                    currentButton = buttonElement;
+                })
+                .catch(error => {
+                    console.error('Audio playback failed:', error);
+                    alert('Audio playback failed. Please make sure the audio file is available.');
+                    buttonElement.innerHTML = '<i class="fas fa-play"></i>';
+                });
+        }
+
+        // Close enlarged image when pressing Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeEnlargedImage();
+            }
+        });
+
+        // Make phone numbers clickable on mobile devices
+        document.addEventListener('DOMContentLoaded', function() {
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                const phoneNumbers = document.querySelectorAll('.contact-number');
+                phoneNumbers.forEach(number => {
+                    number.style.cursor = 'pointer';
+                    number.addEventListener('click', function() {
+                        window.location.href = 'tel:' + this.textContent.replace(/\D/g, '');
+                    });
+                });
+            }
+        });
+
+        // PDF Download functionality
+        document.getElementById('downloadPdfBtn').addEventListener('click', function() {
+            // Create a temporary link element
+            const link = document.createElement('a');
+            link.href = 'biography.pdf'; // Path to the PDF file
+            link.download = 'biography.pdf'; // Name of the downloaded file
+            
+            // Simulate click to trigger download
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Show download notification
+            const notification = document.getElementById('downloadNotification');
+            notification.classList.add('show');
+            
+            // Hide notification after 3 seconds
+            setTimeout(function() {
+                notification.classList.remove('show');
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
